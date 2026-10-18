@@ -731,61 +731,29 @@ async function exportImage(){
 }
 $('exportImageBtn').onclick=async()=>{try{await exportImage();}catch(err){console.error(err);alert(err?.message||'画像を作成できませんでした。会話内容を確認して、もう一度試してください。')}};
 $('shareBtn').onclick=async()=>{
- // Keep the user's edited post text. Only generate defaults if the preview is empty.
- if(!$('postText').value.trim())updatePostText();
- const text=$('postText').value.trim();
+ // Open X immediately from the user's click so popup blockers do not stop it after image generation.
+ const text=$('postText').value.trim() || (updatePostText(), $('postText').value.trim());
  const intentUrl='https://x.com/intent/tweet?text='+encodeURIComponent(text);
- const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
- // On desktop, open a blank tab synchronously from the click so the browser won't block X later.
  let xWindow=null;
- if(!isMobile){
-  xWindow=window.open('about:blank','_blank');
- }
+ try{xWindow=window.open('about:blank','_blank');}catch(e){console.warn('Could not open X tab',e);}
  try{
   saveReport();
   const canvas=await makeCanvas();
   const blob=await canvasToPngBlob(canvas);
   const file=new File([blob],`乃木レポ_${$('reportDate').value||'report'}.png`,{type:'image/png'});
-  // Use the system share sheet only on phones/tablets. Windows Share is not the X editor.
-  if(isMobile&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-   try{
-    await navigator.share({files:[file],text,title:'乃木レポ'});
-    return;
-   }catch(e){
-    if(e.name==='AbortError')return;
-    console.warn('Native share failed; falling back to download + X compose.',e);
-   }
-  }
-  // Desktop or unsupported mobile: download image and open X's compose page with text/hashtags.
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),60000);
-  // Put the generated PNG on the clipboard where supported. The X compose page cannot
-  // receive a local file attachment from an intent URL, but the user can paste it with Ctrl+V.
-  let imageCopied=false;
-  try{
-   if(navigator.clipboard?.write && window.ClipboardItem){
-    const item=new ClipboardItem({'image/png':blob});
-    await navigator.clipboard.write([item]);
-    imageCopied=true;
-   }
-  }catch(e){console.warn('Could not copy image to clipboard; use the downloaded PNG.',e)}
-  // Do NOT write text to the clipboard after copying the PNG: that would replace the image.
-  // The post text and hashtags are already prefilled in X's compose URL.
   if(xWindow&&!xWindow.closed){
    xWindow.location.href=intentUrl;
-  }else if(isMobile){
-   // fallback for mobile browsers without file sharing
-   const opened=window.open(intentUrl,'_blank');
-   if(!opened)location.href=intentUrl;
+   alert('Xの投稿画面を開きました。ダウンロードされたPNG画像をXの投稿欄に添付して、投稿文を確認してください。');
   }else{
-   if(confirm('Xの編集画面を新しいタブで開けませんでした。今の画面でXを開く？'))location.href=intentUrl;
+   // Popup blocked: navigate this tab as a reliable fallback.
+   alert('新しいタブがブロックされたため、この画面でXを開きます。画像はダウンロードされています。');
+   location.href=intentUrl;
   }
-  alert(imageCopied
-   ?'Xの投稿編集画面を開きました。レポート画像をクリップボードにコピーしてあります。投稿欄で Ctrl+V を押すと画像を貼り付けられます。投稿文とハッシュタグは入力済みなので、確認して投稿してください。'
-   :'Xの投稿編集画面を開きました。保存されたPNGをXの画像ボタンから選んで添付してください。投稿文とハッシュタグは入力済みです。');
  }catch(err){
-  if(xWindow&&!xWindow.closed) xWindow.close();
+  if(xWindow&&!xWindow.closed)xWindow.close();
   console.error(err);
   alert(err?.message||'レポート画像を作成できませんでした。会話を短くするか、写真を外してもう一度試してください。');
  }
