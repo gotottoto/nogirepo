@@ -653,23 +653,25 @@ async function makeCanvas(){
  const messages=[];
  for(const l of chatDraft){
   if(l.type==='note'){
+   // Scene memo is plain text between speech bubbles: no label and no surrounding box.
    const noteFs=19,lines=[];ctx.font=`${noteFs}px sans-serif`;const maxNoteW=w-pad*2;let line='';
    for(const ch of l.text){if(ch==='\n'){lines.push(line);line='';continue}const test=line+ch;if(line&&ctx.measureText(test).width>maxNoteW){lines.push(line);line=ch}else line=test}
    if(line||!lines.length)lines.push(line);
-   const lineH=27,width=Math.min(maxNoteW,Math.max(120,Math.ceil(Math.max(...lines.map(t=>ctx.measureText(t).width))+32)));
-   messages.push({note:true,fs:noteFs,lines,width,height:lines.length*lineH+34,lineH});
+   const lineH=27;
+   messages.push({note:true,fs:noteFs,lines,width:maxNoteW,height:lines.length*lineH,lineH});
    continue;
   }
-  const me=l.who==='me',name=me?(data.settings.displayName||'自分'):(m?.nickname?.trim()||m?.name||'推しメン');
-  const fs=Math.min(36,Math.max(12,Number(l.fontSize)||18)),text=`${name}：${l.text}`,font=`${fs}px sans-serif`;
-  ctx.font=font;const maxTextW=maxBubbleW-textPadX*2;const lines=[];let line='';
+  const me=l.who==='me';
+  const fs=Math.min(36,Math.max(12,Number(l.fontSize)||18)),text=l.text,font=`${fs}px sans-serif`;
+  const speakerGutter=0;
+  ctx.font=font;const maxTextW=maxBubbleW-textPadX*2-speakerGutter;const lines=[];let line='';
   for(const ch of text){
    if(ch==='\n'){lines.push(line);line='';continue}
    const test=line+ch;
    if(line&&ctx.measureText(test).width>maxTextW){lines.push(line);line=ch}else line=test;
   }
   if(line||!lines.length)lines.push(line);
-  const lineH=Math.ceil(fs*1.42),width=Math.min(maxBubbleW,Math.max(90,Math.ceil(Math.max(...lines.map(t=>ctx.measureText(t).width))+textPadX*2)));
+  const lineH=Math.ceil(fs*1.42),width=Math.min(maxBubbleW-speakerGutter,Math.max(90,Math.ceil(Math.max(...lines.map(t=>ctx.measureText(t).width))+textPadX*2)));
   const height=lines.length*lineH+textPadY*2;
   messages.push({me,fs,lines,width,height,lineH,note:false});
  }
@@ -692,8 +694,17 @@ async function makeCanvas(){
  ctx.strokeStyle='#c9b9df';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();y+=34;
  const cs=activeReportChatColors||data.settings.chatColors||{};
  for(const msg of messages){
-  if(msg.note){const x=(w-msg.width)/2;ctx.fillStyle='rgba(255,255,255,.72)';ctx.beginPath();roundRect(ctx,x,y,msg.width,msg.height,12);ctx.fill();ctx.strokeStyle='#d8cce5';ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#927eaa';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('場面メモ',w/2,y+18);ctx.fillStyle='#756a80';ctx.font=`${msg.fs}px sans-serif`;msg.lines.forEach((line,i)=>ctx.fillText(line,w/2,y+39+i*msg.lineH));}
-  else{const x=msg.me?w-pad-msg.width:pad;ctx.fillStyle=msg.me?(cs.meBg||'#a8e6b0'):(cs.memberBg||'#ffffff');ctx.beginPath();roundRect(ctx,x,y,msg.width,msg.height,18);ctx.fill();ctx.fillStyle=msg.me?(cs.meText||'#263746'):(cs.memberText||'#263746');ctx.font=`${msg.fs}px sans-serif`;ctx.textAlign='left';msg.lines.forEach((line,i)=>ctx.fillText(line,x+textPadX,y+textPadY+msg.fs+i*msg.lineH));}
+  if(msg.note){ctx.fillStyle='#756a80';ctx.font=`${msg.fs}px sans-serif`;ctx.textAlign='center';msg.lines.forEach((line,i)=>ctx.fillText(line,w/2,y+msg.fs+i*msg.lineH));}
+  else{
+   const x=msg.me?w-pad-msg.width:pad;
+   ctx.fillStyle=msg.me?(cs.meBg||'#a8e6b0'):(cs.memberBg||'#ffffff');ctx.beginPath();roundRect(ctx,x,y,msg.width,msg.height,18);ctx.fill();
+   // Speech-bubble tail pointing toward the speaker side.
+   ctx.beginPath();
+   if(msg.me){ctx.moveTo(x+msg.width-28,y+msg.height-2);ctx.lineTo(x+msg.width-13,y+msg.height+9);ctx.lineTo(x+msg.width-40,y+msg.height-2);}
+   else{ctx.moveTo(x+28,y+msg.height-2);ctx.lineTo(x+13,y+msg.height+9);ctx.lineTo(x+40,y+msg.height-2);}
+   ctx.closePath();ctx.fill();
+   ctx.fillStyle=msg.me?(cs.meText||'#263746'):(cs.memberText||'#263746');ctx.font=`${msg.fs}px sans-serif`;ctx.textAlign='left';msg.lines.forEach((line,i)=>ctx.fillText(line,x+textPadX,y+textPadY+msg.fs+i*msg.lineH));
+  }
   y+=msg.height+18;
  }
  return c
