@@ -1,0 +1,993 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#dff3fa">
+<link id="appManifest" rel="manifest" href="./manifest-rep.webmanifest">
+<link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/nogirepo-rep-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="乃木レポ">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>乃木レポ｜ミーグリ管理</title>
+<style>
+:root{--blue:#eee8f7;--blue2:#d8c8ed;--teal:#7652a5;--ink:#392b4d;--bg:#faf8fd;--line:#e5dced;--green:#a8e6b0;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Yu Gothic",Meiryo,sans-serif}
+header{background:linear-gradient(120deg,#f4effa,#e5d9f3);padding:18px max(16px,calc((100vw - 1050px)/2));border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-size:23px;font-weight:800;letter-spacing:.03em}.brand small{display:block;font-size:11px;font-weight:500;letter-spacing:.1em;color:#548091}
+button,input,select,textarea{font:inherit}button{border:0;border-radius:12px;padding:10px 14px;background:var(--teal);color:white;cursor:pointer;font-weight:650}button.secondary{background:#edf6f9;color:var(--ink);border:1px solid var(--line)}button.danger{background:#fff0f0;color:#9c3f4b;border:1px solid #f4d6d9}button:disabled{opacity:.45;cursor:not-allowed}
+main{max-width:1050px;margin:20px auto;padding:0 14px 50px}.tabs{display:flex;gap:8px;overflow:auto;padding:4px 0 14px}.tab{white-space:nowrap;background:white;color:#517281;border:1px solid var(--line)}.tab.active{background:var(--teal);color:white}
+.panel{background:white;border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 5px 20px #32718b0b}
+h1,h2,h3,p{margin-top:0}h2{font-size:20px;margin-bottom:14px}h3{font-size:16px;margin-bottom:8px}.muted{color:#72909b;font-size:13px}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.between{justify-content:space-between}.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.weekday{text-align:center;color:#7b99a3;font-size:12px;padding:5px}.day{background:#f8fcfd;border:1px solid #e7f1f4;color:var(--ink);padding:7px 3px;min-height:68px;border-radius:10px;text-align:left;display:flex;flex-direction:column;gap:4px}.day.selected{outline:2px solid var(--teal);background:#e6f7fb}.day .num{font-size:13px}.dot{font-size:10px;background:#dff3fa;border-radius:6px;padding:2px 3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dot.release{background:#e5f5e8}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid #d6e7ed;border-radius:10px;background:white;color:var(--ink)}textarea{min-height:85px;resize:vertical}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field label{font-size:12px;color:#658592;font-weight:700}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.parts{display:grid;grid-template-columns:1fr;gap:10px}.part{border:1px solid var(--line);border-radius:15px;padding:13px}.parthead{display:flex;justify-content:space-between;align-items:center;gap:8px}.pill{font-size:12px;border-radius:99px;background:#e7f7eb;color:#35774b;padding:5px 9px}.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chip{background:#e4f5fa;border-radius:99px;padding:5px 9px;font-size:13px;display:flex;gap:7px;align-items:center}.chip button{padding:0;background:none;color:#477887;font-size:15px}.memberlist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.member{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column;gap:8px}.member .emoji{display:flex;align-items:center;justify-content:center;width:40px;height:40px;color:var(--teal);text-shadow:none;filter:none}.member .emoji svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:none;box-shadow:none}
+.color-setting input[type="color"]{width:100%;height:42px;padding:3px;border:3px solid var(--picker-border,#d8c8ed);border-radius:10px;background:#fff;cursor:pointer;transition:border-color .12s ease}
+.color-setting input[type="color"]::-webkit-color-swatch-wrapper{padding:0}
+.color-setting input[type="color"]::-webkit-color-swatch{border:1px solid rgba(0,0,0,.18);border-radius:5px}
+.color-setting input[type="color"]::-moz-color-swatch{border:1px solid rgba(0,0,0,.18);border-radius:5px}
+.color-setting output{display:block;font:600 12px ui-monospace,monospace;color:var(--ink);margin-top:5px}
+.chat-color-preview{display:flex;flex-direction:column;gap:10px;margin-top:14px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.preview-bubble{width:fit-content;max-width:88%;padding:12px 15px;border:2px solid var(--bubble-border,#ddd);border-radius:15px;font-size:14px;transition:background-color .12s,color .12s,border-color .12s}
+.preview-member{align-self:flex-start}
+.preview-me{align-self:flex-end}
+
+
+
+
+
+
+#bottomNav{display:flex;flex-wrap:nowrap;align-items:stretch;gap:0;width:100%;overflow:hidden}
+#bottomNav .tab{flex:1 1 0;min-width:0;width:0;padding:7px 1px 6px;gap:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;white-space:nowrap}
+#bottomNav .tab .navicon{width:19px;height:19px;flex:0 0 19px}
+#bottomNav .tab .navicon svg{width:19px;height:19px}
+#bottomNav .tab span:last-child{font-size:clamp(8px,2.4vw,11px);line-height:1.15;letter-spacing:-.04em}
+@media(min-width:600px){#bottomNav .tab span:last-child{font-size:12px}#bottomNav .tab{padding:8px 3px}}
+.part-collapsible{padding:8px 10px;margin-top:6px!important;border-radius:10px}
+.part-collapsible .parthead{min-height:28px}
+.part-collapsible .part-open-button{min-height:28px;padding:3px 9px;font-size:11px}
+.part-collapsible .formgrid{gap:6px;margin-top:5px!important}
+.part-collapsible .field{margin-bottom:0}
+.part-collapsible .field label{font-size:10px;margin-bottom:2px}
+.part-collapsible .time-display{padding:5px 7px;font-size:11px;line-height:1.15}
+.part-collapsible .part-member-list{margin-top:4px}
+.part-collapsible .part-no-members{font-size:10px;padding:0}
+.part-add-row{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.part-add-row select{flex:1;min-width:0}
+.part-ticket-input{width:64px;min-width:54px;padding:8px 5px}
+.part-add-row button{flex:0 0 auto;padding:8px 10px}
+@media(max-width:420px){.part-collapsible{padding:6px 8px}.part-collapsible .time-display{font-size:10px}.part-ticket-input{width:48px;min-width:44px}.part-add-row{gap:4px}}
+
+.part-open-button{margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-width:82px;justify-content:center}
+.memory-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0 20px}
+.memory-stat-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(145deg,#fff,#f4eefb);display:flex;flex-direction:column;gap:4px}
+.memory-stat-card span{font-size:12px;color:var(--muted)}.memory-stat-card strong{font-size:28px;color:#7652a5}.memory-stat-card small{font-size:11px;color:var(--muted)}
+.memory-section-title{margin:20px 0 10px}
+.memory-member-grid,.memory-report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:12px}
+.memory-member-card{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid var(--line);border-radius:14px;background:var(--surface,#fff)}
+.memory-member-avatar,.memory-card-avatar-placeholder{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f0e8fa;color:#7652a5;flex-shrink:0}
+.memory-member-avatar svg,.memory-card-avatar-placeholder svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.memory-member-info{display:flex;flex-direction:column;gap:3px;min-width:0}.memory-member-info strong{font-size:14px}.memory-member-info span,.memory-member-info small{font-size:11px;color:var(--muted)}
+.memory-report-card{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--surface,#fff);box-shadow:0 2px 8px rgba(55,35,75,.04)}
+.memory-card-top{display:flex;align-items:center;gap:10px}.memory-card-avatar{width:54px;height:54px;border-radius:50%;object-fit:cover;flex-shrink:0}.memory-card-title{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}.memory-card-title strong{font-size:15px}.memory-card-title span{font-size:12px;color:var(--muted);overflow-wrap:anywhere}.memory-card-title small{font-size:11px;color:var(--muted)}.memory-card-badge{font-size:10px;background:#f0e8fa;color:#7652a5;padding:4px 7px;border-radius:99px;white-space:nowrap}
+.memory-card-snippets{margin:12px 0;padding:10px;border-radius:10px;background:rgba(118,82,165,.055)}.memory-card-snippets p{margin:3px 0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+@media(max-width:520px){.memory-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.memory-stat-card{padding:10px}.memory-stat-card strong{font-size:24px}}
+.parthead{gap:10px}
+.part-open-details{margin-left:auto;flex:0 0 auto;border:0;padding:0}
+.part-open-summary{display:flex;align-items:center;justify-content:center;gap:5px;min-width:76px;min-height:36px;padding:6px 11px;border:1px solid #d8c8ed;border-radius:10px;background:#f5effb;color:#7652a5;font-size:13px;font-weight:700;cursor:pointer;list-style:none}
+.part-open-summary::-webkit-details-marker{display:none}
+.part-open-details[open] .part-open-summary{background:#7652a5;color:#fff;border-color:#7652a5}
+.part-open-details .part-details-content{min-width:min(320px,80vw)}
+.part-member-list{margin-top:10px}
+.part-no-members{font-size:12px;padding:3px 2px}
+.part-details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+.part-details summary{display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;font-size:13px;font-weight:650;color:var(--teal);padding:5px 2px}
+.part-details summary::-webkit-details-marker{display:none}
+.down-caret{font-size:22px;line-height:1;transition:transform .15s ease}
+.part-details[open] .down-caret{transform:rotate(180deg)}
+.part-details-content{padding-top:10px}
+.ticket-style{border:1px solid #d9c8ed;border-radius:14px;background:linear-gradient(135deg,#fff 0%,#f6f0fc 100%);padding:14px;position:relative;overflow:hidden}
+.ticket-style:after{content:"";position:absolute;right:-18px;top:-18px;width:74px;height:74px;border:10px solid rgba(118,82,165,.08);border-radius:50%}
+.ticket-label{font-size:11px;letter-spacing:.08em;color:#7652a5;font-weight:700}
+.ticket-perf{border-top:1px dashed #c8b7dc;margin-top:10px;padding-top:10px}
+.today-memo{margin-top:8px;width:100%;min-height:70px}
+.today-event{margin-top:12px}
+.member-memo-box{margin:12px 0;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(118,82,165,.06)}
+.member-memo-box strong{display:block;color:var(--teal);font-size:13px;margin-bottom:5px}
+.member-memo-box p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink);font-size:14px}
+.member-memo-box p.is-empty{color:#897f93;font-style:italic}
+.member-memo-snippet{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;color:var(--ink);background:rgba(118,82,165,.06);border-radius:8px;padding:7px 9px;margin-top:7px}
+.font-slider-row{display:flex;align-items:center;gap:14px}
+.font-slider-row input[type="range"]{flex:1;min-width:0;accent-color:#7652a5}
+.font-slider-row output{min-width:54px;text-align:center;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.font-slider-sample{margin-top:9px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);overflow-wrap:anywhere}
+.report-avatar-preview{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--line)}.time-display{padding:10px 12px;background:#f7f4fb;border:1px solid var(--line);border-radius:10px;min-height:42px;font-weight:600;color:var(--ink)}.member .name{font-weight:750}.member small{color:#72909b}.chat{background:#eaf4f8;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:12px}.bubble{max-width:82%;padding:11px 13px;border-radius:17px;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.member{align-self:flex-start;background:white;border:0}.bubble.me{align-self:flex-end;background:var(--green);color:#20452a}.bubble .speaker{font-size:11px;opacity:.7;display:block;margin-bottom:4px}.bubble p{margin:0}.bubbletools{display:flex;justify-content:flex-end;gap:5px;margin-top:6px}.bubbletools button{padding:4px 7px;font-size:11px}.notice{background:#fff8e8;border:1px solid #f1e1b8;color:#79602d;border-radius:12px;padding:11px;font-size:13px}.empty{padding:25px;text-align:center;color:#7a98a3}.hidden{display:none!important}.small{font-size:12px}.stat{background:#f2fafc;border-radius:12px;padding:12px;flex:1;min-width:110px}.stat strong{display:block;font-size:21px}
+#bottomNav{position:fixed;z-index:20;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.96);border-top:1px solid var(--line);backdrop-filter:blur(12px)}#bottomNav .tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;font-size:11px;border:0;background:transparent;color:#806e91;font-size:11px}#bottomNav .tab .navicon{display:flex;align-items:center;justify-content:center;width:24px;height:24px}.navicon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:none;box-shadow:none}#bottomNav .tab.active{background:#f0e8fa;color:#67418f;border-radius:12px}.member-cat.active{background:#7652a5;color:#fff;border-color:#7652a5}main{padding-bottom:105px}@media(max-width:650px){main{margin-top:12px}.panel{padding:13px;border-radius:16px}.formgrid{grid-template-columns:1fr}.memberlist{grid-template-columns:repeat(2,minmax(0,1fr))}.day{min-height:55px;padding:5px 2px}.dot{font-size:9px}.bubble{max-width:90%}}
+
+/* v20: compact, truly single-row bottom navigation */
+#bottomNav{
+  display:grid !important;
+  grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+  flex-wrap:nowrap !important;
+  gap:0 !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  padding-left:0 !important;
+  padding-right:0 !important;
+}
+#bottomNav .tab{
+  display:flex !important;
+  flex:initial !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  box-sizing:border-box !important;
+  padding:5px 0 4px !important;
+  margin:0 !important;
+  gap:2px !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  white-space:nowrap !important;
+}
+#bottomNav .tab .navicon,
+#bottomNav .tab .navicon svg{
+  width:16px !important;
+  height:16px !important;
+  min-width:16px !important;
+  flex:0 0 16px !important;
+}
+#bottomNav .tab span:last-child{
+  display:block !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:clip !important;
+  white-space:nowrap !important;
+  font-size:clamp(7px,2.2vw,10px) !important;
+  line-height:1.1 !important;
+  letter-spacing:-.06em !important;
+}
+@media(min-width:600px){
+ #bottomNav .tab span:last-child{font-size:11px !important}
+ #bottomNav .tab .navicon,#bottomNav .tab .navicon svg{width:18px!important;height:18px!important;flex-basis:18px!important}
+}
+/* Part times are plain text, not bordered boxes */
+.part-collapsible .time-display{
+  display:block !important;
+  padding:0 !important;
+  margin:0 !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  min-height:0 !important;
+  box-shadow:none !important;
+  font-size:11px !important;
+  line-height:1.35 !important;
+  font-weight:500 !important;
+  color:var(--ink) !important;
+}
+.part-collapsible .formgrid .field{
+  background:transparent !important;
+  border:0 !important;
+  padding:0 !important;
+}
+
+
+/* v21: two-column navigation on phone-sized screens */
+@media(max-width:600px){
+  #bottomNav{
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    grid-auto-rows:minmax(36px,auto) !important;
+    gap:4px 6px !important;
+    overflow:visible !important;
+    padding:6px 8px calc(6px + env(safe-area-inset-bottom, 0px)) !important;
+    box-sizing:border-box !important;
+  }
+  #bottomNav .tab{
+    display:flex !important;
+    flex-direction:row !important;
+    justify-content:flex-start !important;
+    align-items:center !important;
+    gap:7px !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:36px !important;
+    padding:6px 9px !important;
+    border-radius:10px !important;
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+    white-space:nowrap !important;
+  }
+  #bottomNav .tab .navicon,
+  #bottomNav .tab .navicon svg{
+    width:18px !important;height:18px !important;min-width:18px !important;
+    flex:0 0 18px !important;
+  }
+  #bottomNav .tab span:last-child{
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+    letter-spacing:0 !important;
+    text-align:left !important;
+  }
+}
+@media(min-width:601px){
+  #bottomNav{
+    display:grid !important;
+    grid-template-columns:repeat(6,minmax(0,1fr)) !important;
+  }
+}
+/* Rename all visible app branding to Nogirepo */
+
+
+/* PWA home icon selector */
+.icon-choice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.icon-choice{display:flex;flex-direction:column;align-items:center;gap:5px;border:1px solid var(--line);border-radius:14px;padding:10px 6px;background:var(--white);cursor:pointer;min-width:0;text-align:center}
+.icon-choice:has(input:checked){border:2px solid var(--teal);background:var(--blue)}
+.icon-choice input{accent-color:var(--teal);margin:0 0 3px}
+.icon-choice img{width:60px;height:60px;border-radius:14px;object-fit:cover}
+.icon-choice strong{font-size:12px}
+.icon-choice small{font-size:10px;color:#756a80}
+.install-instructions{margin-top:16px;padding:12px;border-radius:12px;background:var(--blue);font-size:13px;line-height:1.6}
+.install-instructions p{margin:8px 0 0}
+@media(max-width:400px){.icon-choice-grid{gap:6px}.icon-choice{padding:8px 3px}.icon-choice img{width:48px;height:48px}.icon-choice strong{font-size:11px}}
+
+
+.icon-choice:has(input:checked){outline:2px solid var(--teal);outline-offset:1px}
+.auth-overlay{position:fixed;inset:0;z-index:1000;background:rgba(25,17,35,.48);display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.auth-overlay.hidden{display:none}
+.auth-card{width:min(100%,440px);background:#fff;border-radius:20px;padding:20px;box-shadow:0 16px 50px rgba(0,0,0,.18);max-height:calc(100dvh - 32px);overflow:auto}
+.auth-card h2{margin:0;font-size:20px}
+.auth-message{margin-top:10px;padding:10px;border-radius:10px;background:#fff0f0;color:#a1283a;font-size:13px;overflow-wrap:anywhere}
+.auth-setup-note{margin-top:12px;padding:10px;border-radius:10px;background:#f4effa;color:#5b4771;font-size:12px;line-height:1.5}
+.text-button{background:transparent;color:#7652a5;padding:8px 0;text-decoration:underline;margin-top:8px}
+
+
+.remember-login-option{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#faf8fd;cursor:pointer}
+.remember-login-option input{margin:3px 0 0;accent-color:#7652a5;width:17px;height:17px;flex:0 0 17px}
+.remember-login-option span{display:flex;flex-direction:column;gap:3px}
+.remember-login-option strong{font-size:13px;color:var(--ink)}
+.remember-login-option small{font-size:11px;color:#756a80;line-height:1.4}
+
+
+/* Conversation scene notes between bubbles */
+.scene-note{align-self:center;max-width:94%;width:fit-content;margin:2px auto;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.68);color:#756a80;text-align:center;font-size:12px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;border:1px dashed #d8cce5}
+.scene-note-label{display:block;font-size:10px;font-weight:700;letter-spacing:.04em;color:#927eaa;margin-bottom:2px}
+.note-tools{display:flex;justify-content:center;gap:5px;margin-top:5px}
+.note-tools button{padding:3px 7px;font-size:10px}
+.scene-note-export{font-size:19px;color:#756a80;text-align:center;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+
+
+#utterance{width:100%;min-height:86px;resize:vertical;line-height:1.55;white-space:pre-wrap}
+
+
+.speaker-tabs{display:flex;align-items:center;gap:6px;margin:0 0 6px;flex-wrap:nowrap}
+.speaker-tab{flex:0 0 auto;border:1px solid #ded2ed;border-radius:8px;background:#f4f0f8;color:#302743;padding:5px 12px;min-height:30px;font-size:13px;line-height:1.2}
+.speaker-tab.active{background:#7952a6;color:#fff;border-color:#7952a6;font-weight:700}
+@media(max-width:480px){.speaker-tabs{gap:4px}.speaker-tab{padding:5px 10px;font-size:12px}}
+
+/* v57: conversation composer is a vertical stack */
+.composer-formgrid{display:flex!important;flex-direction:column!important;gap:8px!important;align-items:stretch!important}
+.composer-formgrid .speaker-tabs{order:0;align-self:flex-start;margin:0 0 2px!important}
+.composer-formgrid #utterance{width:100%;box-sizing:border-box}
+.composer-formgrid .field{width:100%;min-width:0;margin:0!important}
+</style>
+</head>
+<body>
+<header><div class="brand">乃木レポ <small>NOGIZAKA MEET & GREET NOTE</small></div><button class="secondary" id="accountBtn" type="button" onclick="document.getElementById('authModal').classList.remove('hidden')">ログイン</button></header>
+<main>
+
+<div class="top-spacer"></div>
+<section id="calendar" class="view">
+<div class="panel">
+<div class="row between"><div><h2 id="monthTitle">カレンダー</h2><p class="muted">日付を選んで、シングル発売日やミーグリを登録</p></div><div class="row"><button class="secondary" id="prevMonth">‹</button><button class="secondary" id="todayBtn">今月</button><button class="secondary" id="nextMonth">›</button></div></div>
+<div class="grid" id="calendarGrid"></div>
+</div>
+<div class="panel">
+<div class="row between"><div><h2 id="selectedTitle">日程を選択</h2><p class="muted" id="selectedSubtitle">カレンダーの日付をクリック</p></div><button id="addEventBtn">＋ 日程を登録</button></div>
+<div id="eventEditor" class="formgrid hidden">
+<div class="field"><label>予定の種類</label><select id="eventType"><option value="stage">舞台</option><option value="drama">ドラマ</option><option value="tv">テレビ</option><option value="radio">ラジオ</option><option value="live">ライブ・イベント</option><option value="other">その他</option></select></div>
+<div class="field"><label>タイトル／シングル名</label><input id="eventName" placeholder="例：○○シングル オンラインミーグリ"></div>
+<div class="field"><label>関連メンバー（任意）</label><select id="eventMember"><option value="">メンバーを選択…</option></select></div>
+<div class="field"><label>開催形式（任意）</label><input id="eventFormat" placeholder="オンライン／リアルなど"></div>
+<div class="field"><label>通知</label><select id="reminder"><option>受付開始の30分前</option><option>受付開始の1時間前</option><option>前日の19:00</option><option>通知しない</option></select></div>
+<div class="row"><button id="saveEventBtn">日程を保存</button><button class="secondary" id="cancelEventBtn">キャンセル</button></div>
+</div>
+<div id="eventDetails"></div>
+</div>
+</section>
+<section id="today" class="view hidden">
+<div class="panel">
+<div class="row between"><div><h2>今日の予定</h2><p class="muted" id="todayDateLabel">今日の予定と、話したいことメモ</p></div><button class="secondary" id="todayRefreshBtn">更新</button></div>
+<div id="todayAgenda"></div>
+</div>
+</section>
+<section id="members" class="view hidden">
+<div class="panel">
+<div class="row between"><div><h2>メンバー・推し設定</h2><p class="muted">公式メンバー一覧から、呼び方と推し設定だけを変更できます</p></div></div>
+<div class="formgrid" style="margin-bottom:14px"><div class="field"><label>表示</label><select id="memberStatus"><option value="all">全員</option><option value="active">現役</option><option value="og">OG</option></select></div><div class="field"><label>名前で検索</label><input id="memberSearch" placeholder="メンバー名・呼び方"></div></div>
+<div class="row" id="memberCategoryChips" style="margin-bottom:14px;gap:7px;flex-wrap:wrap">
+<button class="secondary member-cat active" data-cat="favorite">💜 推し</button>
+<button class="secondary member-cat" data-cat="3">3期生</button>
+<button class="secondary member-cat" data-cat="4">4期生</button>
+<button class="secondary member-cat" data-cat="5">5期生</button>
+<button class="secondary member-cat" data-cat="6">6期生</button>
+<button class="secondary member-cat" data-cat="og">OG</button>
+<button class="secondary member-cat" data-cat="all">全員</button>
+</div>
+<div id="memberEditor" class="formgrid hidden" style="margin-bottom:16px">
+<div class="field"><label>自分用の呼び方（任意）</label><input id="newMemberNick" placeholder="例：🐟、🏯、まおちゃん"></div>
+<div class="field"><label>推しメン</label><select id="newMemberFav"><option value="no">推しにしない</option><option value="yes">推しに登録</option></select></div>
+<div class="row"><button id="saveMemberBtn">保存</button><button class="secondary" id="cancelMemberBtn">キャンセル</button></div>
+</div>
+<div id="memberList" class="memberlist"></div>
+<div class="panel" style="margin-top:16px"><h3>チケット記録</h3><p class="muted">カレンダーに登録した参加枚数を、メンバー別・リアル／オンライン別に集計します。</p><div id="ticketStats"></div></div>
+</div>
+</section>
+<section id="reports" class="view hidden">
+<div class="panel">
+<div class="row between"><div><h2>ミーグリレポート</h2><p class="muted">参加日程から会話を残す。左が推し、右が自分。</p></div><button id="newReportBtn">＋ レポート作成</button></div>
+<div id="reportList"></div>
+</div>
+<div id="reportEditor" class="panel hidden">
+<div class="row between"><h2 id="reportTitle">レポート編集</h2><button class="secondary" id="closeReportBtn">閉じる</button></div>
+<div class="formgrid">
+<div class="field"><label>日付</label><input type="date" id="reportDate"></div>
+<div class="field"><label>部</label><select id="reportPart"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+<div class="field"><label>メンバー</label><select id="reportMember"></select></div>
+<div class="field"><label>チケット枚数</label><input id="reportTickets" type="number" min="1" step="1" value="1"></div>
+</div>
+<div class="formgrid" style="margin-top:12px">
+<div class="field"><label>髪型</label><input id="reportHair" placeholder="例：ポニーテール、前髪あり"></div>
+<div class="field"><label>服装</label><input id="reportOutfit" placeholder="例：白い衣装、青いカーディガン"></div>
+
+</div>
+
+<div class="field" style="margin-top:10px"><label>レポート上部の丸アイコン写真（任意）</label><input id="reportAvatarInput" type="file" accept="image/*"><div class="row" align="center" style="margin-top:8px;gap:10px"><img id="reportAvatarPreview" alt="" class="report-avatar-preview hidden"><span class="muted" id="reportAvatarStatus">写真を登録しなければ、丸アイコンは表示されません。</span><button type="button" class="secondary" id="removeReportAvatarBtn">写真を外す</button></div></div>
+<div id="chatArea" class="chat" style="margin:14px 0"></div>
+<div class="formgrid composer-formgrid">
+<div class="speaker-tabs" role="group" aria-label="発言する人"><button type="button" class="speaker-tab active" data-who="me">自分</button><button type="button" class="speaker-tab" data-who="member">推し</button><button type="button" class="speaker-tab" data-who="thought">場面メモ</button></div>
+<div class="field"><label for="utterance">会話内容</label><textarea id="utterance" rows="3" placeholder="会話を入力。Enterで改行できます"></textarea><div class="muted small">複数行で入力できます。改行は吹き出しとレポート画像にも反映されます。</div></div>
+<div class="field"><label for="utteranceSize">文字の大きさ（この発言）</label><div class="font-slider-row"><input id="utteranceSize" type="range" min="12" max="36" step="1" value="18"><output id="utteranceSizeValue">18 px</output></div><div class="font-slider-sample" id="utteranceSizeSample">文字サイズのプレビュー</div></div>
+</div>
+<div class="row" style="margin-top:10px"><button id="addUtteranceBtn">吹き出しを追加</button><button class="secondary" id="saveReportBtn">レポートを保存</button></div>
+
+<div class="row" style="margin-top:14px"><button id="exportImageBtn">画像を作成・保存</button><button id="shareBtn">Xに載せる</button></div>
+<div class="field" style="margin-top:12px"><label>投稿文プレビュー（編集可能）</label><textarea id="postText"></textarea></div>
+<div class="muted">「Xに載せる」を押すとレポ画像とハッシュタグ入りの投稿文を準備します。スマホは共有メニューでXを選ぶと、画像・文章入りの編集画面へ進めます。パソコンでは画像を保存してXの編集画面を開くので、画像を添付してください。投稿前に文章を編集できます。</div>
+</div>
+</section>
+<section id="memories" class="view hidden">
+<div class="panel">
+<div class="row between"><div><h2>思い出</h2><p class="muted">保存したレポートと、メンバーごとの参加枚数</p></div></div>
+<div id="memoryStats" class="memory-stats"></div>
+<div id="memoryCards" class="memory-cards"></div>
+</div>
+</section>
+<section id="settings" class="view hidden">
+<div class="panel">
+<h2>ホーム画面アイコン</h2>
+<p class="muted">自分の好きな画像、紫の「レポ」アイコン、ハートから選べます。</p>
+<div class="icon-choice-grid">
+<label class="icon-choice"><input type="radio" name="homeIconStyle" value="custom"><img id="customIconPreview" src="./icons/nogirepo-rep-180.png" alt="選択した画像"><strong>自分の画像</strong><small>写真を選ぶ</small></label>
+<label class="icon-choice"><input type="radio" name="homeIconStyle" value="rep"><img src="./icons/nogirepo-rep-180.png" alt=""><strong>レポ</strong><small>紫・文字入り</small></label>
+<label class="icon-choice"><input type="radio" name="homeIconStyle" value="heart"><img src="./icons/nogirepo-heart-180.png" alt=""><strong>ハート</strong><small>淡い紫</small></label>
+</div>
+<div class="field" style="margin-top:12px"><label for="customIconFile">好きな画像を選択</label><input id="customIconFile" type="file" accept="image/png,image/jpeg,image/webp"></div>
+<div class="row" style="margin-top:12px"><button id="saveHomeIconBtn">アイコンを保存</button></div>
+<div class="install-instructions">
+<strong>ホーム画面への追加方法</strong>
+<p><b>iPhone：</b>Safariで乃木レポを開く → 共有 →「ホーム画面に追加」。アイコンは追加前に選択してください。</p>
+<p><b>Android：</b>Chromeで乃木レポを開く → メニュー →「ホーム画面に追加」または「アプリをインストール」。</p>
+<p class="muted">自分の画像はアプリ内に保存してプレビューできます。端末のホーム画面アイコンとして反映されるかはOS・ブラウザの仕様によります。反映されない場合は、画像をサーバーに置いた専用アイコンとして設定する必要があります。</p>
+</div>
+</div>
+<div class="panel"><h2>会話デザイン</h2>
+<p class="muted">自分とメンバー、それぞれの吹き出し色・文字色を設定できます。</p>
+<div class="formgrid">
+<div class="field color-setting"><label>自分の吹き出し</label><input id="meBubbleColor" class="live-color" type="color" value="#a8e6b0"><output id="meBubbleHex">#A8E6B0</output></div>
+<div class="field color-setting"><label>自分の文字色</label><input id="meTextColor" class="live-color" type="color" value="#263746"><output id="meTextHex">#263746</output></div>
+<div class="field color-setting"><label>相手の吹き出し</label><input id="memberBubbleColor" class="live-color" type="color" value="#ffffff"><output id="memberBubbleHex">#FFFFFF</output></div>
+<div class="field color-setting"><label>相手の文字色</label><input id="memberTextColor" class="live-color" type="color" value="#263746"><output id="memberTextHex">#263746</output></div>
+</div>
+<div class="chat-color-preview" id="chatColorPreview" aria-live="polite">
+<div class="preview-bubble preview-member" id="previewMemberBubble">相手の会話サンプル</div>
+<div class="preview-bubble preview-me" id="previewMeBubble">自分の会話サンプル</div>
+</div>
+<div class="row" style="margin-top:12px"><button id="saveChatColorsBtn">会話の色を保存</button></div>
+<p class="muted" id="chatColorSaveNote">変更はプレビューで確認できます。保存済みレポートには反映されません。</p>
+</div>
+<div class="panel"><h2>レポート・アプリ設定</h2>
+<div class="field"><label>共通ハッシュタグ（スペース区切り）</label><input id="globalTags" value="#乃木坂46 #ミーグリレポ"></div>
+<div class="field" style="margin-top:12px"><label>レポート画像のデザイン</label><select id="design"><option value="purple">乃木坂パープル</option><option value="blue">淡いブルー</option><option value="simple">シンプル白</option><option value="mint">ミントグリーン</option></select></div>
+<div class="row" style="margin-top:14px"><button id="saveSettingsBtn">設定を保存</button><button class="secondary" id="exportDataBtn">データを書き出す</button><label class="secondary" style="padding:10px 14px;border-radius:12px;cursor:pointer">データを読み込む<input id="importData" type="file" accept="application/json" style="display:none"></label></div>
+<p class="muted" style="margin-top:12px">メンバー名簿は公式メンバー一覧と公開されている卒業生一覧をもとに登録した初期データです。卒業・加入状況は変わるため、公開運用時は定期確認が必要です。データを書き出してバックアップできます。</p>
+</div>
+</section>
+</main>
+<div id="authModal" class="auth-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+<div class="auth-card">
+<div class="row between"><h2 id="authTitle">乃木レポにログイン</h2><button type="button" class="secondary" id="closeAuthBtn" aria-label="閉じる">×</button></div>
+<p class="muted" id="authIntro">メールアドレスとパスワードでログイン。保存した予定・レポートをアカウントに同期します。</p>
+<div class="field"><label for="authEmail">メールアドレス</label><input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+<div class="field" style="margin-top:10px"><label for="authPassword">パスワード</label><input id="authPassword" type="password" autocomplete="current-password" placeholder="8文字以上を推奨"></div>
+<div class="field hidden" id="authConfirmWrap" style="margin-top:10px"><label for="authConfirm">パスワード（確認）</label><input id="authConfirm" type="password" autocomplete="new-password" placeholder="もう一度入力"></div>
+<div id="authError" class="auth-message hidden" role="status"></div>
+<label class="remember-login-option"><input id="rememberLogin" type="checkbox" checked><span><strong>次回から自動ログイン</strong><small>この端末でログイン状態を保持します</small></span></label>
+<div class="row" style="margin-top:14px;flex-wrap:wrap"><button id="authSubmitBtn" type="button">ログイン</button><button id="authModeBtn" type="button" class="secondary">新規登録</button></div>
+<div class="row" style="margin-top:8px"><button id="authLogoutBtn" type="button" class="danger hidden">ログアウト</button></div>
+<button id="authForgotBtn" type="button" class="text-button">パスワードを忘れた場合</button>
+<p class="muted" style="font-size:11px;margin-top:12px">ログインすると、あなたのアカウントに保存されたデータを読み込みます。レポートは初期設定で非公開です。</p>
+<div id="authSetupNote" class="auth-setup-note">ログインのクラウド同期を使うには、管理者による認証サービスの設定が必要です。</div>
+</div>
+</div>
+<nav id="bottomNav" aria-label="メインメニュー">
+<button class="tab" data-tab="today"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4.5" width="16" height="16" rx="2"/><path d="M8 2.8v3.5M16 2.8v3.5M4 9h16M8 13h3M8 16h6"/></svg></span><span>今日の予定</span></button>
+<button class="tab active" data-tab="calendar"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="16" rx="2"/><path d="M16 3v4M8 3v4M3.5 10h17"/></svg></span><span>カレンダー</span></button>
+<button class="tab" data-tab="members"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20v-1.2A5.8 5.8 0 0 1 8.8 13h.4a5.8 5.8 0 0 1 5.8 5.8V20M16 4.9a3.2 3.2 0 0 1 0 6.2M17 14a5.5 5.5 0 0 1 4 5.3V20"/></svg></span><span>メンバー</span></button>
+<button class="tab" data-tab="reports"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 11.5a7.5 7.5 0 0 1-7.5 7.5H6l-3 2v-6.5A7.5 7.5 0 1 1 20 11.5Z"/><path d="M8 11h8M8 14h5"/></svg></span><span>レポート</span></button>
+<button class="tab" data-tab="memories"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><span>思い出</span></button>
+<button class="tab" data-tab="settings"><span class="navicon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1 1.1 1.9-2 2-1.9-1.1a7.8 7.8 0 0 1-1.8.7l-.5 2.1h-2.8l-.5-2.1a7.8 7.8 0 0 1-1.8-.7l-1.9 1.1-2-2 1.1-1.9a7.8 7.8 0 0 1-.7-1.8L3.7 12.7V9.9l2.1-.5a7.8 7.8 0 0 1 .7-1.8L5.4 5.7l2-2 1.9 1.1a7.8 7.8 0 0 1 1.8-.7l.5-2.1h2.8l.5 2.1a7.8 7.8 0 0 1 1.8.7l1.9-1.1 2 2-1.1 1.9a7.8 7.8 0 0 1 .7 1.8l2.1.5v2.8l-2.1.5a7.8 7.8 0 0 1-.7 1.8Z"/></svg></span><span>設定</span></button>
+</nav>
+<script src="./supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const $=id=>document.getElementById(id);
+const today=new Date(); let viewYear=today.getFullYear(),viewMonth=today.getMonth(),selectedDate=iso(today),editingEventId=null,editingMemberId=null,currentReportId=null,chatDraft=[],pendingReportAvatar=null,activeReportChatColors=null;
+const sampleMembers=[{"id":"active-01","name":"愛宕心響","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"あたごここね"},{"id":"active-02","name":"五百城茉央","status":"active","nickname":"🐟","favorite":true,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"いおきまお"},{"id":"active-03","name":"池田瑛紗","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"いけだてれさ"},{"id":"active-04","name":"一ノ瀬美空","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"いちのせみく"},{"id":"active-05","name":"伊藤理々杏","status":"active","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"いとうりりあ"},{"id":"active-06","name":"井上和","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"いのうえなぎ"},{"id":"active-07","name":"岩本蓮加","status":"active","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"いわもとれんか"},{"id":"active-08","name":"遠藤さくら","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"えんどうさくら"},{"id":"active-09","name":"大越ひなの","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"おおこしひなの"},{"id":"active-10","name":"岡本姫奈","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"おかもとひな"},{"id":"active-11","name":"小川彩","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"おがわあや"},{"id":"active-12","name":"奥田いろは","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"おくだいろは"},{"id":"active-13","name":"小津玲奈","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"おづれいな"},{"id":"active-14","name":"海邉朱莉","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"かいべあかり"},{"id":"active-15","name":"賀喜遥香","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"かきはるか"},{"id":"active-16","name":"金川紗耶","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"かながわさや"},{"id":"active-17","name":"川﨑桜","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"かわさきさくら"},{"id":"active-18","name":"川端晃菜","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"かわばたひな"},{"id":"active-19","name":"黒見明香","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"くろみはるか"},{"id":"active-20","name":"柴田柚菜","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"しばたゆな"},{"id":"active-21","name":"菅原咲月","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"すがわらさつき"},{"id":"active-22","name":"鈴木佑捺","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"すずきゆうな"},{"id":"active-23","name":"瀬戸口心月","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"せとぐちみつき"},{"id":"active-24","name":"田村真佑","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"たむらまゆ"},{"id":"active-25","name":"筒井あやめ","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"つついあやめ"},{"id":"active-26","name":"冨里奈央","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"とみさとなお"},{"id":"active-27","name":"長嶋凛桜","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"ながしまりお"},{"id":"active-28","name":"中西アルノ","status":"active","nickname":"","favorite":false,"generation":"5","color":"#7652a5","backgroundData":null,"reading":"なかにしあるの"},{"id":"active-29","name":"林瑠奈","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"はやしるな"},{"id":"active-30","name":"増田三莉音","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"ますだみりね"},{"id":"active-31","name":"森平麗心","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"もりひらうるみ"},{"id":"active-32","name":"矢田萌華","status":"active","nickname":"","favorite":false,"generation":"6","color":"#7652a5","backgroundData":null,"reading":"やだもえか"},{"id":"active-33","name":"弓木奈於","status":"active","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"ゆみきなお"},{"id":"og-01","name":"秋元真夏","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"あきもとまなつ"},{"id":"og-02","name":"安藤美雲","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"あんどうみくも"},{"id":"og-03","name":"生田絵梨花","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"いくたえりか"},{"id":"og-04","name":"生駒里奈","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"いこまりな"},{"id":"og-05","name":"市來玲奈","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"いちきれな"},{"id":"og-06","name":"伊藤寧々","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"いとうねね"},{"id":"og-07","name":"伊藤万理華","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"いとうまりか"},{"id":"og-08","name":"井上小百合","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"いのうえさゆり"},{"id":"og-09","name":"岩瀬佑美子","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"いわせゆみこ"},{"id":"og-10","name":"衛藤美彩","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"えとうみさ"},{"id":"og-11","name":"柏幸奈","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"かしわゆきな"},{"id":"og-12","name":"川後陽菜","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"かわごひな"},{"id":"og-13","name":"川村真洋","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"かわむらまひろ"},{"id":"og-14","name":"齋藤飛鳥","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"さいとうあすか"},{"id":"og-15","name":"斎藤ちはる","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"さいとうちはる"},{"id":"og-16","name":"斉藤優里","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"さいとうゆうり"},{"id":"og-17","name":"桜井玲香","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"さくらいれいか"},{"id":"og-18","name":"白石麻衣","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"しらいしまい"},{"id":"og-19","name":"高山一実","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"たかやまかずみ"},{"id":"og-20","name":"中田花奈","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"なかだかな"},{"id":"og-21","name":"中元日芽香","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"なかもとひめか"},{"id":"og-22","name":"永島聖羅","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"ながしませいら"},{"id":"og-23","name":"西野七瀬","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"にしのななせ"},{"id":"og-24","name":"能條愛未","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"のうじょうあみ"},{"id":"og-25","name":"橋本奈々未","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"はしもとななみ"},{"id":"og-26","name":"畠中清羅","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"はたなかせいら"},{"id":"og-27","name":"樋口日奈","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"ひぐちひな"},{"id":"og-28","name":"深川麻衣","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"ふかがわまい"},{"id":"og-29","name":"星野みなみ","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"ほしのみなみ"},{"id":"og-30","name":"松村沙友理","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"まつむらさゆり"},{"id":"og-31","name":"宮澤成良","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"みやざわせいら"},{"id":"og-32","name":"大和里菜","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"やまとりな"},{"id":"og-33","name":"若月佑美","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"わかつきゆみ"},{"id":"og-34","name":"和田まあや","status":"og","nickname":"","favorite":false,"generation":"1","color":"#7652a5","backgroundData":null,"reading":"わだまあや"},{"id":"og-35","name":"伊藤かりん","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"いとうかりん"},{"id":"og-36","name":"伊藤純奈","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"いとうじゅんな"},{"id":"og-37","name":"北野日奈子","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"きたのひなこ"},{"id":"og-38","name":"相楽伊織","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"さがらいおり"},{"id":"og-39","name":"佐々木琴子","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"ささきことこ"},{"id":"og-40","name":"新内眞衣","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"しんうちまい"},{"id":"og-41","name":"鈴木絢音","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"すずきあやね"},{"id":"og-42","name":"寺田蘭世","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"てらだらんぜ"},{"id":"og-43","name":"西川七海","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"にしかわななみ"},{"id":"og-44","name":"堀未央奈","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"ほりみおな"},{"id":"og-45","name":"矢田里沙子","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"やだりさこ"},{"id":"og-46","name":"山崎怜奈","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"やまざきれな"},{"id":"og-47","name":"米徳京花","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"よねとくきょうか"},{"id":"og-48","name":"渡辺みり愛","status":"og","nickname":"","favorite":false,"generation":"2","color":"#7652a5","backgroundData":null,"reading":"わたなべみりあ"},{"id":"og-49","name":"梅澤美波","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"うめざわみなみ"},{"id":"og-50","name":"大園桃子","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"おおぞのももこ"},{"id":"og-51","name":"久保史緒里","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"くぼしおり"},{"id":"og-52","name":"阪口珠美","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"さかぐちたまみ"},{"id":"og-53","name":"佐藤楓","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"さとうかえで"},{"id":"og-54","name":"中村麗乃","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"なかむられの"},{"id":"og-55","name":"向井葉月","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"むかいはづき"},{"id":"og-56","name":"山下美月","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"やましたみづき"},{"id":"og-57","name":"吉田綾乃クリスティー","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"よしだあやのくりすてぃー"},{"id":"og-58","name":"与田祐希","status":"og","nickname":"","favorite":false,"generation":"3","color":"#7652a5","backgroundData":null,"reading":"よだゆうき"},{"id":"og-59","name":"掛橋沙耶香","status":"og","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"かけはしさやか"},{"id":"og-60","name":"北川悠理","status":"og","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"きたがわゆり"},{"id":"og-61","name":"佐藤璃果","status":"og","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"さとうりか"},{"id":"og-62","name":"清宮レイ","status":"og","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"せいみやれい"},{"id":"og-63","name":"早川聖来","status":"og","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"はやかわせいら"},{"id":"og-64","name":"松尾美佑","status":"og","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"まつおみゆ"},{"id":"og-65","name":"矢久保美緒","status":"og","nickname":"","favorite":false,"generation":"4","color":"#7652a5","backgroundData":null,"reading":"やくぼみお"},{"id":"og-66","name":"松井玲奈","status":"og","nickname":"","favorite":false,"generation":"og","color":"#7652a5","backgroundData":null,"reading":"まついれな"}];
+const defaultEvents=[{"id":"official-release-42","date":"2026-07-22","type":"release","name":"42ndシングル「是非に及ばず」発売","format":"42ndシングル","reminder":"前日の19:00","parts":{}},{"id":"official-meet-2026-08-16","date":"2026-08-16","type":"meet","name":"42ndシングル「是非に及ばず」オンラインミーグリ","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"official-meet-2026-09-13","date":"2026-09-13","type":"meet","name":"42ndシングル「是非に及ばず」オンラインミーグリ","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"official-meet-2026-09-27","date":"2026-09-27","type":"meet","name":"42ndシングル「是非に及ばず」オンラインミーグリ","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"official-meet-2026-10-18","date":"2026-10-18","type":"meet","name":"42ndシングル「是非に及ばず」オンラインミーグリ","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"official-meet-2026-10-24","date":"2026-10-24","type":"meet","name":"42ndシングル「是非に及ばず」オンラインミーグリ","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"official-meet-2026-11-15","date":"2026-11-15","type":"meet","name":"42ndシングル「是非に及ばず」オンラインミーグリ","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"official-single-1","date":"2012-02-22","type":"release","name":"1thシングル「ぐるぐるカーテン」発売","format":"1thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-2","date":"2012-05-02","type":"release","name":"2thシングル「おいでシャンプー」発売","format":"2thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-3","date":"2012-08-22","type":"release","name":"3thシングル「走れ!Bicycle」発売","format":"3thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-4","date":"2012-12-19","type":"release","name":"4thシングル「制服のマネキン」発売","format":"4thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-5","date":"2013-03-13","type":"release","name":"5thシングル「君の名は希望」発売","format":"5thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-6","date":"2013-07-03","type":"release","name":"6thシングル「ガールズルール」発売","format":"6thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-7","date":"2013-11-27","type":"release","name":"7thシングル「バレッタ」発売","format":"7thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-8","date":"2014-04-02","type":"release","name":"8thシングル「気づいたら片想い」発売","format":"8thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-9","date":"2014-07-09","type":"release","name":"9thシングル「夏のFree&Easy」発売","format":"9thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-10","date":"2014-10-08","type":"release","name":"10thシングル「何度目の青空か?」発売","format":"10thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-11","date":"2015-03-18","type":"release","name":"11thシングル「命は美しい」発売","format":"11thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-12","date":"2015-07-22","type":"release","name":"12thシングル「太陽ノック」発売","format":"12thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-13","date":"2015-10-28","type":"release","name":"13thシングル「今、話したい誰かがいる」発売","format":"13thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-14","date":"2016-03-23","type":"release","name":"14thシングル「ハルジオンが咲く頃」発売","format":"14thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-15","date":"2016-07-27","type":"release","name":"15thシングル「裸足でSummer」発売","format":"15thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-16","date":"2016-11-09","type":"release","name":"16thシングル「サヨナラの意味」発売","format":"16thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-17","date":"2017-03-22","type":"release","name":"17thシングル「インフルエンサー」発売","format":"17thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-18","date":"2017-08-09","type":"release","name":"18thシングル「逃げ水」発売","format":"18thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-19","date":"2017-10-11","type":"release","name":"19thシングル「いつかできるから今日できる」発売","format":"19thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-20","date":"2018-04-25","type":"release","name":"20thシングル「シンクロニシティ」発売","format":"20thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-21","date":"2018-08-08","type":"release","name":"21thシングル「ジコチューで行こう!」発売","format":"21thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-22","date":"2018-11-14","type":"release","name":"22thシングル「帰り道は遠回りしたくなる」発売","format":"22thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-23","date":"2019-05-29","type":"release","name":"23thシングル「Sing Out!」発売","format":"23thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-24","date":"2019-09-04","type":"release","name":"24thシングル「夜明けまで強がらなくてもいい」発売","format":"24thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-25","date":"2020-03-25","type":"release","name":"25thシングル「しあわせの保護色」発売","format":"25thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-26","date":"2021-01-27","type":"release","name":"26thシングル「僕は僕を好きになる」発売","format":"26thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-27","date":"2021-06-09","type":"release","name":"27thシングル「ごめんねFingers crossed」発売","format":"27thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-28","date":"2021-09-22","type":"release","name":"28thシングル「君に叱られた」発売","format":"28thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-29","date":"2022-03-23","type":"release","name":"29thシングル「Actually...」発売","format":"29thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-30","date":"2022-08-31","type":"release","name":"30thシングル「好きというのはロックだぜ!」発売","format":"30thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-31","date":"2022-12-07","type":"release","name":"31thシングル「ここにはないもの」発売","format":"31thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-32","date":"2023-03-29","type":"release","name":"32thシングル「人は夢を二度見る」発売","format":"32thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-33","date":"2023-08-23","type":"release","name":"33thシングル「おひとりさま天国」発売","format":"33thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-34","date":"2023-12-06","type":"release","name":"34thシングル「Monopoly」発売","format":"34thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-35","date":"2024-03-27","type":"release","name":"35thシングル「チャンスは平等」発売","format":"35thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-36","date":"2024-08-21","type":"release","name":"36thシングル「チートデイ」発売","format":"36thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-37","date":"2024-12-11","type":"release","name":"37thシングル「歩道橋」発売","format":"37thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-38","date":"2025-03-26","type":"release","name":"38thシングル「ネーブルオレンジ」発売","format":"38thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-39","date":"2025-07-30","type":"release","name":"39thシングル「Same numbers」発売","format":"39thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-40","date":"2025-11-26","type":"release","name":"40thシングル「ビリヤニ」発売","format":"40thシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-41","date":"2026-04-08","type":"release","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」発売","format":"41stシングル","reminder":"前日の19:00","parts":{}},{"id":"official-single-43","date":"2026-12-02","type":"release","name":"43rdシングル「君ロス」発売","format":"43rdシングル","reminder":"前日の19:00","parts":{}},{"id":"official-album-","date":"2015-01-07","type":"release","name":"1stアルバム「透明な色」発売","format":"1stアルバム","reminder":"前日の19:00","parts":{}},{"id":"official-album-","date":"2016-05-25","type":"release","name":"2ndアルバム「それぞれの椅子」発売","format":"2ndアルバム","reminder":"前日の19:00","parts":{}},{"id":"official-album-","date":"2017-05-24","type":"release","name":"3rdアルバム「生まれてから初めて見た夢」発売","format":"3rdアルバム","reminder":"前日の19:00","parts":{}},{"id":"official-album-","date":"2019-04-17","type":"release","name":"4thアルバム「今が思い出になるまで」発売","format":"4thアルバム","reminder":"前日の19:00","parts":{}},{"id":"official-album-time-flies","date":"2021-12-15","type":"release","name":"ベストアルバム「Time flies」発売","format":"ベストアルバム","reminder":"前日の19:00","parts":{}},{"id":"official-album-my-respect","date":"2026-01-14","type":"release","name":"5thアルバム「My respect」発売","format":"5thアルバム","reminder":"前日の19:00","parts":{}},{"id":"history-2012-03-03-1","date":"2012-03-03","type":"meet","name":"1stシングル「ぐるぐるカーテン」全国握手会（東京・よみうりランド）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-2012-04-07-2","date":"2012-04-07","type":"meet","name":"1stシングル「ぐるぐるカーテン」全国握手会（名古屋）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-2012-04-29-3","date":"2012-04-29","type":"meet","name":"1stシングル「ぐるぐるカーテン」全国握手会（大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-2012-03-24-4","date":"2012-03-24","type":"meet","name":"1stシングル「ぐるぐるカーテン」個別握手会（名古屋）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2012-03-31-5","date":"2012-03-31","type":"meet","name":"1stシングル「ぐるぐるカーテン」個別握手会（東京）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2012-04-28-6","date":"2012-04-28","type":"meet","name":"1stシングル「ぐるぐるカーテン」個別握手会（大阪）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2012-05-19-7","date":"2012-05-19","type":"meet","name":"2ndシングル「おいでシャンプー」全国握手会（名古屋）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-2012-07-07-8","date":"2012-07-07","type":"meet","name":"2ndシングル「おいでシャンプー」全国握手会（東京）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-2012-07-14-9","date":"2012-07-14","type":"meet","name":"2ndシングル「おいでシャンプー」全国握手会（大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-2012-09-22-10","date":"2012-09-22","type":"meet","name":"3rdシングル「走れ！Bicycle」全国握手会（名古屋）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-2012-10-14-11","date":"2012-10-14","type":"meet","name":"3rdシングル「走れ！Bicycle」全国握手会（幕張）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-2012-09-02-12","date":"2012-09-02","type":"meet","name":"3rdシングル「走れ！Bicycle」個別握手会（幕張）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2012-09-23-13","date":"2012-09-23","type":"meet","name":"3rdシングル「走れ！Bicycle」個別握手会（大阪）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2012-09-29-14","date":"2012-09-29","type":"meet","name":"3rdシングル「走れ！Bicycle」個別握手会（名古屋）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2012-10-27-15","date":"2012-10-27","type":"meet","name":"3rdシングル「走れ！Bicycle」個別握手会（横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-01-06-16","date":"2013-01-06","type":"meet","name":"4thシングル「制服のマネキン」個別握手会（幕張）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-01-14-17","date":"2013-01-14","type":"meet","name":"4thシングル「制服のマネキン」個別握手会（横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-02-17-18","date":"2013-02-17","type":"meet","name":"4thシングル「制服のマネキン」個別握手会（京都）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-03-16-19","date":"2013-03-16","type":"meet","name":"5thシングル「君の名は希望」個別握手会（幕張）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-03-31-20","date":"2013-03-31","type":"meet","name":"5thシングル「君の名は希望」個別握手会（東京）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-04-14-21","date":"2013-04-14","type":"meet","name":"5thシングル「君の名は希望」個別握手会（名古屋）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-04-21-22","date":"2013-04-21","type":"meet","name":"5thシングル「君の名は希望」個別握手会（京都）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-04-29-23","date":"2013-04-29","type":"meet","name":"5thシングル「君の名は希望」個別握手会（横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-07-27-24","date":"2013-07-27","type":"meet","name":"6thシングル「ガールズルール」個別握手会（横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-08-11-25","date":"2013-08-11","type":"meet","name":"6thシングル「ガールズルール」個別握手会（横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-09-01-26","date":"2013-09-01","type":"meet","name":"6thシングル「ガールズルール」個別握手会（京都）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-09-21-27","date":"2013-09-21","type":"meet","name":"6thシングル「ガールズルール」個別握手会（東京）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2013-09-29-28","date":"2013-09-29","type":"meet","name":"6thシングル「ガールズルール」個別握手会（名古屋）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-2022-09-04-32","date":"2022-09-04","type":"meet","name":"30thシングル「好きというのはロックだぜ！」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2022-09-18-33","date":"2022-09-18","type":"meet","name":"30thシングル「好きというのはロックだぜ！」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2022-09-25-34","date":"2022-09-25","type":"meet","name":"30thシングル「好きというのはロックだぜ！」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2022-10-09-35","date":"2022-10-09","type":"meet","name":"30thシングル「好きというのはロックだぜ！」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2022-11-13-36","date":"2022-11-13","type":"meet","name":"30thシングル「好きというのはロックだぜ！」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2022-12-04-37","date":"2022-12-04","type":"meet","name":"30thシングル「好きというのはロックだぜ！」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2024-04-07-38","date":"2024-04-07","type":"meet","name":"35thシングル「チャンスは平等」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2024-05-04-39","date":"2024-05-04","type":"meet","name":"35thシングル「チャンスは平等」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2024-05-19-40","date":"2024-05-19","type":"meet","name":"35thシングル「チャンスは平等」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2024-06-02-41","date":"2024-06-02","type":"meet","name":"35thシングル「チャンスは平等」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2024-06-16-42","date":"2024-06-16","type":"meet","name":"35thシングル「チャンスは平等」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2024-07-14-43","date":"2024-07-14","type":"meet","name":"35thシングル「チャンスは平等」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2024-05-06-44","date":"2024-05-06","type":"meet","name":"35thシングル 全国イベント参加券限定「リアルミート＆グリート」","format":"リアルミーグリ","reminder":"なし","parts":{}},{"id":"history-2024-05-26-45","date":"2024-05-26","type":"meet","name":"35thシングル 全国イベント参加券限定「リアルミート＆グリート」","format":"リアルミーグリ","reminder":"なし","parts":{}},{"id":"history-2026-04-12-46","date":"2026-04-12","type":"meet","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2026-04-19-47","date":"2026-04-19","type":"meet","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2026-04-25-48","date":"2026-04-25","type":"meet","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2026-05-10-49","date":"2026-05-10","type":"meet","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2026-06-21-50","date":"2026-06-21","type":"meet","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2026-06-28-51","date":"2026-06-28","type":"meet","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」オンラインミート＆グリート","format":"オンラインミーグリ","reminder":"なし","parts":{}},{"id":"history-2026-04-29-52","date":"2026-04-29","type":"meet","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」リアルミート＆グリート（幕張メッセ）","format":"リアルミーグリ","reminder":"なし","parts":{}},{"id":"history-online-2021-01-31","date":"2021-01-31","type":"meet","name":"26thシングル「僕は僕を好きになる」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-02-07","date":"2021-02-07","type":"meet","name":"26thシングル「僕は僕を好きになる」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-02-14","date":"2021-02-14","type":"meet","name":"26thシングル「僕は僕を好きになる」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-02-27","date":"2021-02-27","type":"meet","name":"26thシングル「僕は僕を好きになる」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-03-14","date":"2021-03-14","type":"meet","name":"26thシングル「僕は僕を好きになる」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-03-21","date":"2021-03-21","type":"meet","name":"26thシングル「僕は僕を好きになる」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-09-26","date":"2021-09-26","type":"meet","name":"28thシングル「君に叱られた」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-10-16","date":"2021-10-16","type":"meet","name":"28thシングル「君に叱られた」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-10-31","date":"2021-10-31","type":"meet","name":"28thシングル「君に叱られた」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-11-13","date":"2021-11-13","type":"meet","name":"28thシングル「君に叱られた」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-12-05","date":"2021-12-05","type":"meet","name":"28thシングル「君に叱られた」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2021-12-25","date":"2021-12-25","type":"meet","name":"28thシングル「君に叱られた」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2022-04-17","date":"2022-04-17","type":"meet","name":"29thシングル「Actually...」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2022-04-30","date":"2022-04-30","type":"meet","name":"29thシングル「Actually...」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2022-05-22","date":"2022-05-22","type":"meet","name":"29thシングル「Actually...」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2022-06-05","date":"2022-06-05","type":"meet","name":"29thシングル「Actually...」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2022-07-03","date":"2022-07-03","type":"meet","name":"29thシングル「Actually...」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2022-07-17","date":"2022-07-17","type":"meet","name":"29thシングル「Actually...」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2022-12-25","date":"2022-12-25","type":"meet","name":"31stシングル「ここにはないもの」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-01-08","date":"2023-01-08","type":"meet","name":"31stシングル「ここにはないもの」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-01-22","date":"2023-01-22","type":"meet","name":"31stシングル「ここにはないもの」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-02-19","date":"2023-02-19","type":"meet","name":"31stシングル「ここにはないもの」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-03-05","date":"2023-03-05","type":"meet","name":"31stシングル「ここにはないもの」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-03-19","date":"2023-03-19","type":"meet","name":"31stシングル「ここにはないもの」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-04-02","date":"2023-04-02","type":"meet","name":"32ndシングル「人は夢を二度見る」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-04-16","date":"2023-04-16","type":"meet","name":"32ndシングル「人は夢を二度見る」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-04-30","date":"2023-04-30","type":"meet","name":"32ndシングル「人は夢を二度見る」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-05-14","date":"2023-05-14","type":"meet","name":"32ndシングル「人は夢を二度見る」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-06-11","date":"2023-06-11","type":"meet","name":"32ndシングル「人は夢を二度見る」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-06-25","date":"2023-06-25","type":"meet","name":"32ndシングル「人は夢を二度見る」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-09-10","date":"2023-09-10","type":"meet","name":"33rdシングル「おひとりさま天国」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-09-17","date":"2023-09-17","type":"meet","name":"33rdシングル「おひとりさま天国」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-09-24","date":"2023-09-24","type":"meet","name":"33rdシングル「おひとりさま天国」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-10-08","date":"2023-10-08","type":"meet","name":"33rdシングル「おひとりさま天国」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-11-05","date":"2023-11-05","type":"meet","name":"33rdシングル「おひとりさま天国」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-11-12","date":"2023-11-12","type":"meet","name":"33rdシングル「おひとりさま天国」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-12-10","date":"2023-12-10","type":"meet","name":"34thシングル「Monopoly」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2023-12-24","date":"2023-12-24","type":"meet","name":"34thシングル「Monopoly」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-01-14","date":"2024-01-14","type":"meet","name":"34thシングル「Monopoly」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-02-04","date":"2024-02-04","type":"meet","name":"34thシングル「Monopoly」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-02-18","date":"2024-02-18","type":"meet","name":"34thシングル「Monopoly」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-03-24","date":"2024-03-24","type":"meet","name":"34thシングル「Monopoly」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-09-15","date":"2024-09-15","type":"meet","name":"36thシングル「チートデイ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-09-29","date":"2024-09-29","type":"meet","name":"36thシングル「チートデイ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-10-20","date":"2024-10-20","type":"meet","name":"36thシングル「チートデイ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-10-27","date":"2024-10-27","type":"meet","name":"36thシングル「チートデイ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-11-24","date":"2024-11-24","type":"meet","name":"36thシングル「チートデイ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-12-01","date":"2024-12-01","type":"meet","name":"36thシングル「チートデイ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2024-12-22","date":"2024-12-22","type":"meet","name":"37thシングル「歩道橋」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-01-12","date":"2025-01-12","type":"meet","name":"37thシングル「歩道橋」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-01-19","date":"2025-01-19","type":"meet","name":"37thシングル「歩道橋」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-03-02","date":"2025-03-02","type":"meet","name":"37thシングル「歩道橋」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-03-09","date":"2025-03-09","type":"meet","name":"37thシングル「歩道橋」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-03-16","date":"2025-03-16","type":"meet","name":"37thシングル「歩道橋」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-03-30","date":"2025-03-30","type":"meet","name":"38thシングル「ネーブルオレンジ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-04-20","date":"2025-04-20","type":"meet","name":"38thシングル「ネーブルオレンジ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-05-11","date":"2025-05-11","type":"meet","name":"38thシングル「ネーブルオレンジ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-06-01","date":"2025-06-01","type":"meet","name":"38thシングル「ネーブルオレンジ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-06-15","date":"2025-06-15","type":"meet","name":"38thシングル「ネーブルオレンジ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-06-29","date":"2025-06-29","type":"meet","name":"38thシングル「ネーブルオレンジ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-08-30","date":"2025-08-30","type":"meet","name":"39thシングル「Same numbers」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-09-23","date":"2025-09-23","type":"meet","name":"39thシングル「Same numbers」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-10-05","date":"2025-10-05","type":"meet","name":"39thシングル「Same numbers」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-10-12","date":"2025-10-12","type":"meet","name":"39thシングル「Same numbers」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-10-26","date":"2025-10-26","type":"meet","name":"39thシングル「Same numbers」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-11-02","date":"2025-11-02","type":"meet","name":"39thシングル「Same numbers」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-12-07","date":"2025-12-07","type":"meet","name":"40thシングル「ビリヤニ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-12-14","date":"2025-12-14","type":"meet","name":"40thシングル「ビリヤニ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2025-12-27","date":"2025-12-27","type":"meet","name":"40thシングル「ビリヤニ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2026-01-10","date":"2026-01-10","type":"meet","name":"40thシングル「ビリヤニ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2026-01-25","date":"2026-01-25","type":"meet","name":"40thシングル「ビリヤニ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-online-2026-02-08","date":"2026-02-08","type":"meet","name":"40thシングル「ビリヤニ」オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"受付開始の30分前","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-real-2023-10-15","date":"2023-10-15","type":"meet","name":"33rdシングル「おひとりさま天国」リアルミート＆グリート（京都パルスプラザ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2023-11-19","date":"2023-11-19","type":"meet","name":"33rdシングル「おひとりさま天国」リアルミート＆グリート（パシフィコ横浜）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2024-09-14","date":"2024-09-14","type":"meet","name":"36thシングル「チートデイ」リアルミート＆グリート（幕張メッセ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2025-01-26","date":"2025-01-26","type":"meet","name":"37thシングル「歩道橋」リアルミート＆グリート（幕張メッセ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2025-02-02","date":"2025-02-02","type":"meet","name":"37thシングル「歩道橋」リアルミート＆グリート（京都パルスプラザ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2025-04-13","date":"2025-04-13","type":"meet","name":"38thシングル「ネーブルオレンジ」リアルミート＆グリート（幕張メッセ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2025-09-15","date":"2025-09-15","type":"meet","name":"39thシングル「Same numbers」オンライン応募抽選ミート＆グリート","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2026-02-01","date":"2026-02-01","type":"meet","name":"40thシングル「ビリヤニ」リアルミート＆グリート（京都パルスプラザ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2026-02-28","date":"2026-02-28","type":"meet","name":"40thシングル「ビリヤニ」リアルミート＆グリート（幕張メッセ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2026-05-02","date":"2026-05-02","type":"meet","name":"41stシングル「最後に階段を駆け上がったのはいつだ？」リアルミート＆グリート（京都パルスプラザ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2026-10-04","date":"2026-10-04","type":"meet","name":"42ndシングル「是非に及ばず」リアルミート＆グリート（幕張メッセ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-real-2026-10-12","date":"2026-10-12","type":"meet","name":"42ndシングル「是非に及ばず」リアルミート＆グリート（幕張メッセ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-online-national-2023-10-29","date":"2023-10-29","type":"meet","name":"33rdシングル「おひとりさま天国」全国イベント参加券限定オンラインミート＆グリート","format":"オンライン・個別トーク会","reminder":"なし","parts":{"1":{"reception":"09:45〜11:15","session":"10:00〜11:30","members":[]},"2":{"reception":"11:45〜13:15","session":"12:00〜13:30","members":[]},"3":{"reception":"14:15〜15:45","session":"14:30〜16:00","members":[]},"4":{"reception":"16:15〜17:45","session":"16:30〜18:00","members":[]},"5":{"reception":"18:15〜19:45","session":"18:30〜20:00","members":[]}}},{"id":"history-add-2013-12-15-1","date":"2013-12-15","type":"meet","name":"7thシングル「バレッタ」発売記念 個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2013-12-29-2","date":"2013-12-29","type":"meet","name":"7thシングル「バレッタ」発売記念 個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-01-05-3","date":"2014-01-05","type":"meet","name":"7thシングル「バレッタ」発売記念 個別握手会（愛知・ポートメッセ名古屋）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-01-19-4","date":"2014-01-19","type":"meet","name":"7thシングル「バレッタ」発売記念 個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-02-11-5","date":"2014-02-11","type":"meet","name":"7thシングル「バレッタ」発売記念 個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-03-02-6","date":"2014-03-02","type":"meet","name":"7thシングル「バレッタ」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-04-06-7","date":"2014-04-06","type":"meet","name":"8thシングル「気づいたら片想い」発売記念 個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-04-20-8","date":"2014-04-20","type":"meet","name":"8thシングル「気づいたら片想い」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-05-05-9","date":"2014-05-05","type":"meet","name":"8thシングル「気づいたら片想い」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-05-18-10","date":"2014-05-18","type":"meet","name":"8thシングル「気づいたら片想い」発売記念 個別握手会（愛知・ポートメッセ名古屋）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-06-21-11","date":"2014-06-21","type":"meet","name":"8thシングル「気づいたら片想い」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2014-07-21-12","date":"2014-07-21","type":"meet","name":"8thシングル「気づいたら片想い」発売記念 個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-04-05-13","date":"2015-04-05","type":"meet","name":"11thシングル「命は美しい」発売記念 個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-04-12-14","date":"2015-04-12","type":"meet","name":"11thシングル「命は美しい」発売記念 個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-05-03-15","date":"2015-05-03","type":"meet","name":"11thシングル「命は美しい」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-05-24-16","date":"2015-05-24","type":"meet","name":"11thシングル「命は美しい」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-06-07-17","date":"2015-06-07","type":"meet","name":"11thシングル「命は美しい」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-06-14-18","date":"2015-06-14","type":"meet","name":"11thシングル「命は美しい」発売記念 個別握手会（愛知・ポートメッセ名古屋）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-07-26-19","date":"2015-07-26","type":"meet","name":"12thシングル「太陽ノック」発売記念 個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-08-02-20","date":"2015-08-02","type":"meet","name":"12thシングル「太陽ノック」発売記念 個別握手会（愛知・ポートメッセ名古屋）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-09-13-21","date":"2015-09-13","type":"meet","name":"12thシングル「太陽ノック」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-09-22-22","date":"2015-09-22","type":"meet","name":"12thシングル「太陽ノック」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-10-18-23","date":"2015-10-18","type":"meet","name":"12thシングル「太陽ノック」発売記念 個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-11-22-24","date":"2015-11-22","type":"meet","name":"12thシングル「太陽ノック」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-11-03-25","date":"2015-11-03","type":"meet","name":"13thシングル「今、話したい誰かがいる」発売記念 個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-11-29-26","date":"2015-11-29","type":"meet","name":"13thシングル「今、話したい誰かがいる」発売記念 個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2015-12-27-27","date":"2015-12-27","type":"meet","name":"13thシングル「今、話したい誰かがいる」発売記念 個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2016-01-09-28","date":"2016-01-09","type":"meet","name":"13thシングル「今、話したい誰かがいる」発売記念 個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2016-01-30-29","date":"2016-01-30","type":"meet","name":"13thシングル「今、話したい誰かがいる」発売記念 個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-add-2016-02-28-30","date":"2016-02-28","type":"meet","name":"13thシングル「今、話したい誰かがいる」発売記念 個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-04-16-全国hs-1","date":"2016-04-16","type":"meet","name":"14thシングル「ハルジオンが咲く頃」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-04-29-全国hs-2","date":"2016-04-29","type":"meet","name":"14thシングル「ハルジオンが咲く頃」全国握手会（愛知・ポートメッセなごや）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-05-04-全国hs-3","date":"2016-05-04","type":"meet","name":"14thシングル「ハルジオンが咲く頃」全国握手会（京都・京都パルスプラザ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-04-17-個別hs-4","date":"2016-04-17","type":"meet","name":"14thシングル「ハルジオンが咲く頃」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-04-30-個別hs-5","date":"2016-04-30","type":"meet","name":"14thシングル「ハルジオンが咲く頃」個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-05-05-個別hs-6","date":"2016-05-05","type":"meet","name":"14thシングル「ハルジオンが咲く頃」個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-05-15-個別hs-7","date":"2016-05-15","type":"meet","name":"14thシングル「ハルジオンが咲く頃」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-05-29-個別hs-8","date":"2016-05-29","type":"meet","name":"14thシングル「ハルジオンが咲く頃」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-06-04-個別hs-9","date":"2016-06-04","type":"meet","name":"14thシングル「ハルジオンが咲く頃」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-09-04-全国hs-10","date":"2016-09-04","type":"meet","name":"15thシングル「裸足でSummer」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-09-18-全国hs-11","date":"2016-09-18","type":"meet","name":"15thシングル「裸足でSummer」全国握手会（愛知・ポートメッセなごや）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-10-01-全国hs-12","date":"2016-10-01","type":"meet","name":"15thシングル「裸足でSummer」全国握手会（京都・京都パルスプラザ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-09-25-個別hs-13","date":"2016-09-25","type":"meet","name":"15thシングル「裸足でSummer」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-10-02-個別hs-14","date":"2016-10-02","type":"meet","name":"15thシングル「裸足でSummer」個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-10-23-個別hs-15","date":"2016-10-23","type":"meet","name":"15thシングル「裸足でSummer」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-11-06-個別hs-16","date":"2016-11-06","type":"meet","name":"15thシングル「裸足でSummer」個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-11-13-個別hs-17","date":"2016-11-13","type":"meet","name":"15thシングル「裸足でSummer」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-11-23-全国hs-18","date":"2016-11-23","type":"meet","name":"16thシングル「サヨナラの意味」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-12-17-全国hs-19","date":"2016-12-17","type":"meet","name":"16thシングル「サヨナラの意味」全国握手会（愛知・ポートメッセなごや）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2016-12-18-個別hs-20","date":"2016-12-18","type":"meet","name":"16thシングル「サヨナラの意味」個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-01-15-個別hs-21","date":"2017-01-15","type":"meet","name":"16thシングル「サヨナラの意味」個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-01-22-個別hs-22","date":"2017-01-22","type":"meet","name":"16thシングル「サヨナラの意味」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-02-05-個別hs-23","date":"2017-02-05","type":"meet","name":"16thシングル「サヨナラの意味」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-03-04-個別hs-24","date":"2017-03-04","type":"meet","name":"16thシングル「サヨナラの意味」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-03-12-個別hs-25","date":"2017-03-12","type":"meet","name":"16thシングル「サヨナラの意味」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-04-01-全国hs-26","date":"2017-04-01","type":"meet","name":"17thシングル「インフルエンサー」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-04-09-個別hs-27","date":"2017-04-09","type":"meet","name":"17thシングル「インフルエンサー」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-05-28-個別hs-28","date":"2017-05-28","type":"meet","name":"17thシングル「インフルエンサー」個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-06-11-個別hs-29","date":"2017-06-11","type":"meet","name":"17thシングル「インフルエンサー」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-09-10-全国hs-30","date":"2017-09-10","type":"meet","name":"18thシングル「逃げ水」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-09-18-個別hs-31","date":"2017-09-18","type":"meet","name":"18thシングル「逃げ水」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-09-30-個別hs-32","date":"2017-09-30","type":"meet","name":"18thシングル「逃げ水」個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-10-28-個別hs-33","date":"2017-10-28","type":"meet","name":"18thシングル「逃げ水」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-11-04-個別hs-34","date":"2017-11-04","type":"meet","name":"18thシングル「逃げ水」個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2017-12-23-個別hs-35","date":"2017-12-23","type":"meet","name":"18thシングル「逃げ水」個別握手会（宮城・夢メッセみやぎ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-extra-2018-01-06-全国hs-36","date":"2018-01-06","type":"meet","name":"18thシングル「逃げ水」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-01-21-individual-19th","date":"2018-01-21","type":"meet","name":"19thシングル「いつかできるから今日できる」個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-01-28-individual-19th","date":"2018-01-28","type":"meet","name":"19thシングル「いつかできるから今日できる」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-02-03-individual-19th","date":"2018-02-03","type":"meet","name":"19thシングル「いつかできるから今日できる」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-02-25-individual-19th","date":"2018-02-25","type":"meet","name":"19thシングル「いつかできるから今日できる」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-03-17-individual-19th","date":"2018-03-17","type":"meet","name":"19thシングル「いつかできるから今日できる」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-03-21-individual-19th","date":"2018-03-21","type":"meet","name":"19thシングル「いつかできるから今日できる」個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-01-08-national-19th","date":"2018-01-08","type":"meet","name":"19thシングル「いつかできるから今日できる」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-01-20-national-19th","date":"2018-01-20","type":"meet","name":"19thシングル「いつかできるから今日できる」全国握手会（愛知・ポートメッセなごや）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-03-31-national-19th","date":"2018-03-31","type":"meet","name":"19thシングル「いつかできるから今日できる」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-04-30-individual-20th","date":"2018-04-30","type":"meet","name":"20thシングル「シンクロニシティ」個別握手会（大阪・インテックス大阪）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-05-03-individual-20th","date":"2018-05-03","type":"meet","name":"20thシングル「シンクロニシティ」個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-06-09-individual-20th","date":"2018-06-09","type":"meet","name":"20thシングル「シンクロニシティ」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-06-17-individual-20th","date":"2018-06-17","type":"meet","name":"20thシングル「シンクロニシティ」個別握手会（宮城・夢メッセみやぎ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-06-23-individual-20th","date":"2018-06-23","type":"meet","name":"20thシングル「シンクロニシティ」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-07-16-individual-20th","date":"2018-07-16","type":"meet","name":"20thシングル「シンクロニシティ」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-04-29-national-20th","date":"2018-04-29","type":"meet","name":"20thシングル「シンクロニシティ」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-05-06-national-20th","date":"2018-05-06","type":"meet","name":"20thシングル「シンクロニシティ」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-05-12-national-20th","date":"2018-05-12","type":"meet","name":"20thシングル「シンクロニシティ」全国握手会（愛知・ポートメッセなごや）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-08-12-individual-21st","date":"2018-08-12","type":"meet","name":"21stシングル「ジコチューで行こう！」個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-09-29-individual-21st","date":"2018-09-29","type":"meet","name":"21stシングル「ジコチューで行こう！」個別握手会（宮城・夢メッセみやぎ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-10-13-individual-21st","date":"2018-10-13","type":"meet","name":"21stシングル「ジコチューで行こう！」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-10-21-individual-21st","date":"2018-10-21","type":"meet","name":"21stシングル「ジコチューで行こう！」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-10-27-individual-21st","date":"2018-10-27","type":"meet","name":"21stシングル「ジコチューで行こう！」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-12-15-individual-21st","date":"2018-12-15","type":"meet","name":"21stシングル「ジコチューで行こう！」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-09-09-national-21st","date":"2018-09-09","type":"meet","name":"21stシングル「ジコチューで行こう！」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-10-08-national-21st","date":"2018-10-08","type":"meet","name":"21stシングル「ジコチューで行こう！」全国握手会（愛知・ポートメッセなごや）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-12-23-national-21st","date":"2018-12-23","type":"meet","name":"21stシングル「ジコチューで行こう！」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-01-06-individual-22nd","date":"2019-01-06","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」個別握手会（大阪・インテックス大阪）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-01-14-individual-22nd","date":"2019-01-14","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-01-20-individual-22nd","date":"2019-01-20","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-02-03-individual-22nd","date":"2019-02-03","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-02-16-individual-22nd","date":"2019-02-16","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-03-17-individual-22nd","date":"2019-03-17","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2018-12-23-national-22nd","date":"2018-12-23","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-03-10-national-22nd","date":"2019-03-10","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-03-31-national-22nd","date":"2019-03-31","type":"meet","name":"22ndシングル「帰り道は遠回りしたくなる」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-06-08-individual-23rd","date":"2019-06-08","type":"meet","name":"23rdシングル「Sing Out！」個別握手会（宮城・夢メッセみやぎ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-06-30-individual-23rd","date":"2019-06-30","type":"meet","name":"23rdシングル「Sing Out！」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-07-07-individual-23rd","date":"2019-07-07","type":"meet","name":"23rdシングル「Sing Out！」個別握手会（京都・京都パルスプラザ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-07-28-individual-23rd","date":"2019-07-28","type":"meet","name":"23rdシングル「Sing Out！」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-08-10-individual-23rd","date":"2019-08-10","type":"meet","name":"23rdシングル「Sing Out！」個別握手会（神奈川・パシフィコ横浜）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-09-07-individual-23rd","date":"2019-09-07","type":"meet","name":"23rdシングル「Sing Out！」個別握手会（愛知・Aichi Sky Expo）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-08-04-national-23rd","date":"2019-08-04","type":"meet","name":"23rdシングル「Sing Out！」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-08-24-national-23rd","date":"2019-08-24","type":"meet","name":"23rdシングル「Sing Out！」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-09-08-national-23rd","date":"2019-09-08","type":"meet","name":"23rdシングル「Sing Out！」全国握手会（愛知・Aichi Sky Expo）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-09-16-individual-24th","date":"2019-09-16","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」個別握手会（東京・東京ビッグサイト）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-10-22-individual-24th","date":"2019-10-22","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」個別握手会（宮城・夢メッセみやぎ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-11-09-individual-24th","date":"2019-11-09","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-11-17-individual-24th","date":"2019-11-17","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」個別握手会（大阪・インテックス大阪）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-11-24-individual-24th","date":"2019-11-24","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」個別握手会（千葉・幕張メッセ）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-12-15-individual-24th","date":"2019-12-15","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」個別握手会（愛知・ポートメッセなごや）","format":"個別握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-10-20-national-24th","date":"2019-10-20","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」全国握手会（千葉・幕張メッセ）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-12-14-national-24th","date":"2019-12-14","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」全国握手会（愛知・Aichi Sky Expo）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-official-2019-12-21-national-24th","date":"2019-12-21","type":"meet","name":"24thシングル「夜明けまで強がらなくてもいい」全国握手会（大阪・インテックス大阪）","format":"全国握手会","reminder":"なし","parts":{}},{"id":"history-25th-individual-planned-2020-03-29","date":"2020-03-29","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会（開催予定・未実施/振替対象、愛知・ポートメッセなごや）","format":"個別握手会（未実施・振替対象）","reminder":"なし","parts":{}},{"id":"history-25th-individual-planned-2020-04-11","date":"2020-04-11","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会（開催予定・未実施/振替対象、千葉・幕張メッセ）","format":"個別握手会（未実施・振替対象）","reminder":"なし","parts":{}},{"id":"history-25th-individual-planned-2020-04-25","date":"2020-04-25","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会（開催予定・未実施/振替対象、神奈川・パシフィコ横浜）","format":"個別握手会（未実施・振替対象）","reminder":"なし","parts":{}},{"id":"history-25th-individual-planned-2020-05-02","date":"2020-05-02","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会（開催予定・未実施/振替対象、大阪・インテックス大阪）","format":"個別握手会（未実施・振替対象）","reminder":"なし","parts":{}},{"id":"history-25th-individual-planned-2020-05-16","date":"2020-05-16","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会（開催予定・未実施/振替対象、神奈川・パシフィコ横浜）","format":"個別握手会（未実施・振替対象）","reminder":"なし","parts":{}},{"id":"history-25th-individual-planned-2020-07-11","date":"2020-07-11","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会（開催予定・未実施/振替対象、神奈川・パシフィコ横浜）","format":"個別握手会（未実施・振替対象）","reminder":"なし","parts":{}},{"id":"history-25th-online-transfer-2020-11-07","date":"2020-11-07","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会振替オンラインミート＆グリート","format":"オンラインミート＆グリート（振替）","reminder":"なし","parts":{}},{"id":"history-25th-online-transfer-2020-11-08","date":"2020-11-08","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会振替オンラインミート＆グリート","format":"オンラインミート＆グリート（振替）","reminder":"なし","parts":{}},{"id":"history-25th-online-transfer-2020-11-14","date":"2020-11-14","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会振替オンラインミート＆グリート","format":"オンラインミート＆グリート（振替）","reminder":"なし","parts":{}},{"id":"history-25th-online-transfer-2020-11-15","date":"2020-11-15","type":"meet","name":"25thシングル「しあわせの保護色」個別握手会振替オンラインミート＆グリート","format":"オンラインミート＆グリート（振替）","reminder":"なし","parts":{}},{"id":"history-27th-online-2021-06-13","date":"2021-06-13","type":"meet","name":"27thシングル「ごめんねFingers crossed」オンラインミート＆グリート","format":"オンラインミート＆グリート","reminder":"なし","parts":{}},{"id":"history-27th-online-2021-06-27","date":"2021-06-27","type":"meet","name":"27thシングル「ごめんねFingers crossed」オンラインミート＆グリート","format":"オンラインミート＆グリート","reminder":"なし","parts":{}},{"id":"history-27th-online-2021-07-04","date":"2021-07-04","type":"meet","name":"27thシングル「ごめんねFingers crossed」オンラインミート＆グリート","format":"オンラインミート＆グリート","reminder":"なし","parts":{}},{"id":"history-27th-online-2021-07-25","date":"2021-07-25","type":"meet","name":"27thシングル「ごめんねFingers crossed」オンラインミート＆グリート","format":"オンラインミート＆グリート","reminder":"なし","parts":{}},{"id":"history-27th-online-2021-08-08","date":"2021-08-08","type":"meet","name":"27thシングル「ごめんねFingers crossed」オンラインミート＆グリート","format":"オンラインミート＆グリート","reminder":"なし","parts":{}},{"id":"history-27th-online-2021-08-29","date":"2021-08-29","type":"meet","name":"27thシングル「ごめんねFingers crossed」オンラインミート＆グリート","format":"オンラインミート＆グリート","reminder":"なし","parts":{}},{"id":"history-33rd-real-2023-11-25","date":"2023-11-25","type":"meet","name":"33rdシングル「おひとりさま天国」リアルミート＆グリート（久保史緒里・単独開催）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-34th-real-2024-02-25","date":"2024-02-25","type":"meet","name":"34thシングル「Monopoly」リアルミート＆グリート（幕張メッセ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-36th-real-2024-10-13","date":"2024-10-13","type":"meet","name":"36thシングル「チートデイ」リアルミート＆グリート（Aichi Sky Expo）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-38th-real-2025-05-06","date":"2025-05-06","type":"meet","name":"38thシングル「ネーブルオレンジ」リアルミート＆グリート（ポートメッセなごや）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-39th-real-2025-09-21","date":"2025-09-21","type":"meet","name":"39thシングル「Same numbers」リアルミート＆グリート（幕張メッセ）","format":"リアルミート＆グリート","reminder":"なし","parts":{}},{"id":"history-39th-real-2025-09-27","date":"2025-09-27","type":"meet","name":"39thシングル「Same numbers」リアルミート＆グリート（ポートメッセなごや）","format":"リアルミート＆グリート","reminder":"なし","parts":{}}];
+const initial={members:sampleMembers,events:defaultEvents,reports:[],settings:{tags:'#乃木坂46 #ミーグリレポ',design:'purple',displayName:'',appBgColor:'#faf8fd'}};
+let data=load(); let activeMemberCategory='favorite';
+function load(){try{
+ const saved=JSON.parse(localStorage.getItem('nogizakaMeetApp')||'{}');
+ const savedMembers=Array.isArray(saved.members)?saved.members:[];
+ const byName=new Map(savedMembers.map(m=>[m.name,m]));
+ const officialMembers=sampleMembers.map(m=>({...m,...(byName.get(m.name)||{}),id:byName.get(m.name)?.id||m.id,name:m.name,status:m.status,generation:m.generation}));
+ const customMembers=savedMembers.filter(m=>!sampleMembers.some(o=>o.name===m.name));
+ const savedEvents=Array.isArray(saved.events)?saved.events:[];
+ const mergedEvents=[...defaultEvents.map(e=>({...e,...(savedEvents.find(x=>x.id===e.id)||{})})),...savedEvents.filter(e=>!defaultEvents.some(d=>d.id===e.id))]; const seen42=new Set(); const events=mergedEvents.filter(e=>{const is42Release=e.date==='2026-07-22'&&e.type==='release'&&/42(?:nd|th)?シングル|42ndシングル/.test(e.name||''); const is42Meet=['2026-08-16','2026-09-13','2026-09-27','2026-10-18','2026-10-24','2026-11-15'].includes(e.date)&&e.type==='meet'&&/42ndシングル「是非に及ばず」/.test(e.name||''); if(!is42Release&&!is42Meet)return true; const k=is42Release?'42-release':e.date+'|42-meet'; if(seen42.has(k))return false; seen42.add(k); return true;});
+ return {...initial,...saved,members:[...officialMembers,...customMembers],events,reports:(Array.isArray(saved.reports)?saved.reports:[]).map(r=>({...r,chatColors:r.chatColors||saved.settings?.chatColors||{meBg:'#a8e6b0',meText:'#263746',memberBg:'#ffffff',memberText:'#263746'}})),settings:{...initial.settings,...(saved.settings||{})}};
+ }catch{return structuredClone(initial)}}
+let supabaseClient=null, authUser=null, authMode='login';
+let cloudSaveTimer=null;
+function persist(){
+ localStorage.setItem('nogizakaMeetApp',JSON.stringify(data));
+ if(supabaseClient&&authUser){
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer=setTimeout(async()=>{
+   try{const {error}=await supabaseClient.from('user_data').upsert({user_id:authUser.id,payload:data,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)console.error('Cloud save failed',error);}
+   catch(err){console.error('Cloud save failed',err);}
+  },700);
+ }
+}
+function uid(){return Math.random().toString(36).slice(2,10)}
+function iso(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function memberName(id){let m=data.members.find(x=>x.id===id);return m?(m.nickname?.trim()||m.name):'メンバー'}
+function memberById(id){return data.members.find(x=>x.id===id)}
+function activate(tab){document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));$(tab).classList.remove('hidden');document.querySelectorAll('#bottomNav .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='calendar')renderCalendar();if(tab==='today')renderTodayAgenda();if(tab==='members'){renderMembers();renderTicketStats()}if(tab==='reports')renderReports();if(tab==='memories')renderMemories()}
+document.querySelectorAll('#bottomNav .tab').forEach(b=>b.onclick=()=>activate(b.dataset.tab));
+function renderCalendar(){
+ const first=new Date(viewYear,viewMonth,1),days=new Date(viewYear,viewMonth+1,0).getDate();$('monthTitle').textContent=`${viewYear}年${viewMonth+1}月`;
+ let h=['日','月','火','水','木','金','土'].map(x=>`<div class="weekday">${x}</div>`).join('');
+ for(let i=0;i<first.getDay();i++)h+='<div></div>';
+ for(let d=1;d<=days;d++){let key=`${viewYear}-${String(viewMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`,evs=data.events.filter(e=>e.date===key);h+=`<button class="day ${selectedDate===key?'selected':''}" data-date="${key}"><span class="num">${d}</span>${evs.map(e=>`<span class="dot ${e.type==='release'?'release':''}">${escapeHtml(e.name)}</span>`).join('')}</button>`}
+ $('calendarGrid').innerHTML=h;document.querySelectorAll('.day[data-date]').forEach(b=>b.onclick=()=>{selectedDate=b.dataset.date;renderCalendar();renderSelectedDate()});renderSelectedDate();
+}
+function eventTypeLabel(e){return ({release:'シングル発売日',meet:'ミーグリ',stage:'舞台',drama:'ドラマ',tv:'テレビ',radio:'ラジオ',live:'ライブ・イベント',other:'その他'})[e.type]||'予定'}
+function renderSelectedDate(){
+ $('selectedTitle').textContent=new Date(selectedDate+'T00:00:00').toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+ $('selectedSubtitle').textContent='予定を登録できます。ミーグリの各部は下矢印から詳細を開けます。';
+ $('eventEditor').classList.add('hidden');
+ const evs=data.events.filter(e=>e.date===selectedDate);
+ if(!evs.length){$('eventDetails').innerHTML='<div class="empty">この日の予定はまだありません。<br>「＋ 日程を登録」から追加できます。</div>';return}
+ $('eventDetails').innerHTML=evs.map(e=>`<div class="part" style="margin-top:10px"><div class="parthead"><div><h3>${escapeHtml(e.name)}</h3><div class="muted">${eventTypeLabel(e)}${e.format?' · '+escapeHtml(e.format):''}${e.memberId?' · '+escapeHtml(memberName(e.memberId)):''}</div></div><div class="row"><button class="secondary" onclick="editEvent('${e.id}')">編集</button><button class="danger" onclick="deleteEvent('${e.id}')">削除</button></div></div>${e.type==='meet'?renderPartsSummary(e):''}</div>`).join('');
+}
+let openPartPanels={};
+window.togglePartDetails=(eventId,part)=>{const key=eventId+'-'+part;openPartPanels[key]=!openPartPanels[key];renderSelectedDate()};
+function renderPartsSummary(e){
+ const defaults=[['09:45〜11:15','10:00〜11:30'],['11:45〜13:15','12:00〜13:30'],['14:15〜15:45','14:30〜16:00'],['16:15〜17:45','16:30〜18:00'],['18:15〜19:45','18:30〜20:00']];
+ return `<div class="parts" style="margin-top:10px">${[1,2,3,4,5].map(p=>{
+ let pt=e.parts?.[p]||{reception:defaults[p-1][0],session:defaults[p-1][1],members:[]},count=(pt.members||[]).length,key=e.id+'-'+p,isOpen=!!openPartPanels[key];
+ return `<div class="part part-collapsible"><div class="parthead"><div><strong>${p}部</strong><span class="${count?'pill':'muted'}" style="margin-left:8px">${count?`参加予定 ${count}名`:'未登録'}</span></div><button class="secondary part-open-button" aria-expanded="${isOpen}" onclick="togglePartDetails('${e.id}',${p})">${isOpen?'閉じる':'開く'} <span class="down-caret">${isOpen?'⌃':'⌄'}</span></button></div>
+ <div class="formgrid" style="margin-top:8px"><div class="field"><label>受付時間</label><div class="time-display">${escapeHtml(pt.reception||defaults[p-1][0])}</div></div><div class="field"><label>参加時間</label><div class="time-display">${escapeHtml(pt.session||defaults[p-1][1])}</div></div></div>
+ ${isOpen?`<div class="part-details-content"><div class="part-add-row" style="margin-bottom:8px"><select id="pick-${e.id}-${p}" aria-label="参加メンバーを選択"><option value="">参加メンバーを選択…</option>${[...data.members].sort((a,b)=>(Number(b.favorite)-Number(a.favorite))||(a.reading||a.name).localeCompare(b.reading||b.name,'ja')).map(m=>`<option value="${m.id}">${m.favorite?'★ ':''}${escapeHtml(m.name)}${m.nickname?'（'+escapeHtml(m.nickname)+'）':''} · ${m.status==='og'?(m.generation&&m.generation!=='og'?m.generation+'期生 OG':'OG'):(m.generation?m.generation+'期生':'現役')}</option>`).join('')}</select><input id="tickets-${e.id}-${p}" class="part-ticket-input" type="number" min="1" step="1" value="1" aria-label="チケット枚数" title="チケット枚数"><span class="muted">枚</span><button onclick="addPartMember('${e.id}',${p})">追加</button></div></div>`:''}
+ <div class="part-member-list"><div class="chips">${(pt.members||[]).map(id=>`<span class="chip">${escapeHtml(memberName(id))} · ${Number(pt.ticketCounts?.[id]||1)}枚<button aria-label="チケット枚数変更" onclick="editPartTickets('${e.id}',${p},'${id}')">✎</button><button aria-label="削除" onclick="removePartMember('${e.id}',${p},'${id}')">×</button></span>`).join('')}</div>${count?'':'<div class="muted part-no-members">参加メンバーはまだ登録されていません</div>'}</div>
+ </div>`}).join('')}</div>`;
+}
+window.setPartTime=(id,p,k,v)=>{let e=data.events.find(x=>x.id===id);e.parts=e.parts||{};e.parts[p]=e.parts[p]||{members:[]};e.parts[p][k]=v;persist()};
+window.addPartMember=(id,p)=>{let e=data.events.find(x=>x.id===id),sel=$(`pick-${id}-${p}`),mid=sel.value,countInput=$(`tickets-${id}-${p}`);if(!mid)return alert('参加メンバーを選択してください');const count=parseInt(countInput?.value||'1',10);if(!Number.isInteger(count)||count<1)return alert('チケット枚数は1枚以上で入力してください');e.parts=e.parts||{};e.parts[p]=e.parts[p]||{members:[]};e.parts[p].members=e.parts[p].members||[];e.parts[p].ticketCounts=e.parts[p].ticketCounts||{};if(!e.parts[p].members.includes(mid))e.parts[p].members.push(mid);e.parts[p].ticketCounts[mid]=count;persist();renderSelectedDate();renderTicketStats();renderTodayAgenda()};
+window.editPartTickets=(id,p,mid)=>{let e=data.events.find(x=>x.id===id);e.parts[p].ticketCounts=e.parts[p].ticketCounts||{};const n=prompt('チケット枚数を入力してください',String(e.parts[p].ticketCounts[mid]||1));if(n===null)return;const count=parseInt(n,10);if(!Number.isInteger(count)||count<1)return alert('1枚以上の整数を入力してください');e.parts[p].ticketCounts[mid]=count;persist();renderSelectedDate();renderTicketStats();renderTodayAgenda()};
+window.removePartMember=(id,p,mid)=>{let e=data.events.find(x=>x.id===id);e.parts[p].members=e.parts[p].members.filter(x=>x!==mid);persist();renderSelectedDate();renderTicketStats();renderTodayAgenda()};
+function fillEventMemberOptions(selected=''){
+ const sel=$('eventMember');if(!sel)return;
+ sel.innerHTML='<option value="">メンバーを選択…</option>'+[...data.members].sort((a,b)=>(Number(b.favorite)-Number(a.favorite))||(a.reading||a.name).localeCompare(b.reading||b.name,'ja')).map(m=>`<option value="${m.id}">${m.favorite?'★ ':''}${escapeHtml(m.name)}${m.nickname?'（'+m.nickname+'）':''}</option>`).join('');
+ sel.value=selected||'';
+}
+$('addEventBtn').onclick=()=>{editingEventId=null;$('eventEditor').classList.remove('hidden');$('eventType').value='stage';$('eventName').value='';$('eventFormat').value='';$('reminder').value='受付開始の30分前';fillEventMemberOptions('')};
+$('cancelEventBtn').onclick=()=>$('eventEditor').classList.add('hidden');
+$('saveEventBtn').onclick=()=>{let name=$('eventName').value.trim();if(!name)return alert('タイトルを入力してください');let e={id:editingEventId||uid(),date:selectedDate,type:$('eventType').value,name,memberId:$('eventMember').value||'',format:$('eventFormat').value.trim(),reminder:$('reminder').value,parts:editingEventId?(data.events.find(x=>x.id===editingEventId)?.parts||{}):{}};if(editingEventId)data.events=data.events.map(x=>x.id===editingEventId?e:x);else data.events.push(e);persist();$('eventEditor').classList.add('hidden');renderCalendar();renderTodayAgenda()};
+window.editEvent=id=>{let e=data.events.find(x=>x.id===id);editingEventId=id;$('eventEditor').classList.remove('hidden');$('eventType').value=['stage','drama','tv','radio','live','other'].includes(e.type)?e.type:'stage';$('eventName').value=e.name;$('eventFormat').value=e.format||'';$('reminder').value=e.reminder||'受付開始の30分前';fillEventMemberOptions(e.memberId||'');};
+window.deleteEvent=id=>{if(confirm('この日程を削除しますか？')){data.events=data.events.filter(x=>x.id!==id);persist();renderCalendar();renderTodayAgenda();renderTicketStats()}};
+$('prevMonth').onclick=()=>{viewMonth--;if(viewMonth<0){viewMonth=11;viewYear--}renderCalendar()};
+$('nextMonth').onclick=()=>{viewMonth++;if(viewMonth>11){viewMonth=0;viewYear++}renderCalendar()};
+$('todayBtn').onclick=()=>{viewYear=today.getFullYear();viewMonth=today.getMonth();selectedDate=iso(today);renderCalendar()};
+function renderTicketStats(){
+ const totals=new Map();data.members.forEach(m=>totals.set(m.id,{member:m,online:0,real:0,total:0}));
+ data.events.filter(e=>e.type==='meet').forEach(e=>{
+  const descriptor=((e.format||'')+' '+(e.name||'')).toLowerCase();const mode=/リアル|real/.test(descriptor)?'real':'online';
+  Object.values(e.parts||{}).forEach(pt=>(pt.members||[]).forEach(id=>{if(!totals.has(id))return;const n=Number(pt.ticketCounts?.[id]||1);totals.get(id)[mode]+=n;totals.get(id).total+=n}));
+ });
+ const rows=[...totals.values()].filter(x=>x.total>0).sort((a,b)=>b.total-a.total||(a.member.reading||a.member.name).localeCompare(b.member.reading||b.member.name,'ja'));
+ $('ticketStats').innerHTML=rows.length?`<div class="table-wrap"><table><thead><tr><th>メンバー</th><th>オンライン</th><th>リアル</th><th>合計</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${escapeHtml(x.member.name)}</td><td>${x.online}枚</td><td>${x.real}枚</td><td><strong>${x.total}枚</strong></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">カレンダーでミーグリ参加メンバーとチケット枚数を登録すると、ここに集計されます。</div>';
+}
+function todayIso(){return iso(new Date())}
+function saveTodayMemo(eventId,part,memberId,value){
+ const e=data.events.find(x=>x.id===eventId);if(!e)return;e.parts=e.parts||{};e.parts[part]=e.parts[part]||{members:[]};e.parts[part].talkMemos=e.parts[part].talkMemos||{};e.parts[part].talkMemos[memberId]=value;persist();
+}
+function renderTodayAgenda(){
+ const date=todayIso();$('todayDateLabel').textContent=new Date(date+'T00:00:00').toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'})+' · 今日の予定と話したいことメモ';
+ const evs=data.events.filter(e=>e.date===date).sort((a,b)=>(a.type==='meet'?-1:0)-(b.type==='meet'?-1:0));
+ if(!evs.length){$('todayAgenda').innerHTML='<div class="empty">今日は登録された予定がありません。カレンダーに舞台・ドラマ・テレビ・ミーグリなどを登録すると、ここにも表示されます。</div>';return}
+ $('todayAgenda').innerHTML=evs.map(e=>{
+  if(e.type==='meet'){
+   const parts=[1,2,3,4,5].map(p=>{let pt=e.parts?.[p]||{reception:['09:45〜11:15','11:45〜13:15','14:15〜15:45','16:15〜17:45','18:15〜19:45'][p-1],session:['10:00〜11:30','12:00〜13:30','14:30〜16:00','16:30〜18:00','18:30〜20:00'][p-1],members:[]};return `<div class="ticket-perf"><div class="row between"><strong>${p}部</strong><span class="muted">${escapeHtml(pt.reception||'受付時間未設定')} · ${escapeHtml(pt.session||'参加時間未設定')}</span></div>${(pt.members||[]).length?(pt.members||[]).map(id=>{let m=memberById(id),memo=pt.talkMemos?.[id]||'';return `<div class="today-memo-block"><div class="row between"><strong>${escapeHtml(m?.nickname?.trim()||m?.name||'メンバー')}</strong><span class="pill">${Number(pt.ticketCounts?.[id]||1)}枚</span></div><label for="memo-${e.id}-${p}-${id}">話したいことメモ</label><textarea class="today-memo" id="memo-${e.id}-${p}-${id}" placeholder="この部でこのメンバーに話したいこと…" oninput="saveTodayMemo('${e.id}',${p},'${id}',this.value)">${escapeHtml(memo)}</textarea><button class="secondary" style="margin-top:6px" onclick="newReportFor('${e.id}',${p},'${id}')">この部のレポートを書く</button></div>`}).join(''):'<p class="muted">参加メンバー未登録。カレンダーから登録できます。</p>'}</div>`}).join('');
+   return `<div class="ticket-style today-event"><div class="ticket-label">NOGIZAKA46 · MEET & GREET</div><h3>${escapeHtml(e.name)}</h3><div class="muted">${escapeHtml(e.format||'ミーグリ')}</div>${parts}</div>`
+  }
+  return `<div class="part today-event"><div class="parthead"><div><div class="ticket-label">${eventTypeLabel(e)}</div><h3>${escapeHtml(e.name)}</h3><div class="muted">${escapeHtml(e.format||'')}</div></div><button class="secondary" onclick="goToCalendarDate('${e.date}')">カレンダーで開く</button></div></div>`
+ }).join('');
+}
+window.goToCalendarDate=date=>{selectedDate=date;viewYear=Number(date.slice(0,4));viewMonth=Number(date.slice(5,7))-1;activate('calendar')};
+$('todayRefreshBtn').onclick=renderTodayAgenda;
+function renderMembers(){
+ const status=$('memberStatus').value,search=$('memberSearch').value.toLowerCase();
+ let ms=data.members.filter(m=>{
+ const text=(`${m.name} ${m.nickname||''}`).toLowerCase().includes(search);
+ const catOk=activeMemberCategory==='all' ? true : activeMemberCategory==='favorite' ? !!m.favorite : activeMemberCategory==='og' ? m.status==='og' : m.status==='active' && String(m.generation||'')===activeMemberCategory;
+ return (status==='all'||m.status===status)&&text&&catOk;
+}).sort((a,b)=>{
+ if(activeMemberCategory==='og' || (activeMemberCategory==='all' && a.status==='og' && b.status==='og')){
+   const ga=Number(a.generation)||99, gb=Number(b.generation)||99;
+   if(ga!==gb)return ga-gb;
+ }
+ if(activeMemberCategory==='all' && a.status!==b.status)return a.status==='active'?-1:1;
+ return (a.reading||a.name).localeCompare(b.reading||b.name,'ja');
+});
+ $('memberList').innerHTML=ms.length?ms.map(m=>`<div class="member"><div class="emoji" style="color:${escapeHtml(m.color||'#7652a5')}">👤</div><div class="name">${escapeHtml(m.name)}</div><small>${m.status==='og'?((m.generation&&m.generation!=='og'?m.generation+'期生 OG':'OG')):(m.generation?m.generation+'期生':'現役')} ${m.favorite?' · 推しメン':''}</small><div class="muted">呼び方：${escapeHtml(m.nickname||'公式名')}</div><div class="row"><button class="secondary" onclick="editMember('${m.id}')">編集</button><button class="secondary" onclick="toggleFav('${m.id}')">${m.favorite?'推し解除':'推しに登録'}</button></div></div>`).join(''):'<div class="empty">該当するメンバーはいません。</div>';
+}
+$('memberStatus').onchange=renderMembers;$('memberSearch').oninput=renderMembers;
+document.querySelectorAll('.member-cat').forEach(b=>b.onclick=()=>{activeMemberCategory=b.dataset.cat;document.querySelectorAll('.member-cat').forEach(x=>x.classList.toggle('active',x===b));$('memberStatus').value=activeMemberCategory==='og'?'og':['3','4','5','6','favorite'].includes(activeMemberCategory)?'active':'all';renderMembers()});
+$('cancelMemberBtn').onclick=()=>$('memberEditor').classList.add('hidden');
+$('saveMemberBtn').onclick=()=>{let old=editingMemberId?memberById(editingMemberId):null;if(!old)return alert('公式メンバーの追加・削除はアプリ側で管理します');let obj={...old,nickname:$('newMemberNick').value.trim(),favorite:$('newMemberFav').value==='yes'};data.members=data.members.map(x=>x.id===editingMemberId?obj:x);persist();$('memberEditor').classList.add('hidden');renderMembers()};
+window.editMember=id=>{let m=memberById(id);editingMemberId=id;$('memberEditor').classList.remove('hidden');$('newMemberNick').value=m.nickname||'';$('newMemberFav').value=m.favorite?'yes':'no'};
+window.toggleFav=id=>{let m=memberById(id);m.favorite=!m.favorite;persist();renderMembers()};
+function reportMemberOptions(selected){$('reportMember').innerHTML=[...data.members].sort((a,b)=>(Number(b.favorite)-Number(a.favorite))||(a.reading||a.name).localeCompare(b.reading||b.name,'ja')).map(m=>`<option value="${m.id}" ${m.id===selected?'selected':''}>${m.favorite?'★ ':''}${escapeHtml(m.name)}${m.nickname?'（'+escapeHtml(m.nickname)+'）':''}</option>`).join('')}
+function newReportFor(eventId,part,memberId=null){let e=data.events.find(x=>x.id===eventId),ids=e.parts?.[part]?.members||[];openReport({id:null,date:e.date,part:String(part),memberId:memberId||ids[0]||data.members.find(m=>m.favorite)?.id||data.members[0]?.id,lines:[],eventId});activate('reports')}
+$('newReportBtn').onclick=()=>openReport({id:null,date:selectedDate,part:'1',memberId:data.members.find(m=>m.favorite)?.id||data.members[0]?.id,lines:[]});
+function openReport(r){currentReportId=r.id;selectedSpeakerMode='me';document.querySelectorAll('.speaker-tab').forEach(b=>b.classList.toggle('active',b.dataset.who==='me'));$('addUtteranceBtn').textContent='吹き出しを追加';$('utterance').placeholder='会話を入力。Enterで改行できます';$('reportHair').value=r.hair||'';$('reportOutfit').value=r.outfit||'';activeReportChatColors=JSON.parse(JSON.stringify(r.chatColors||data.settings.chatColors||{meBg:'#a8e6b0',meText:'#263746',memberBg:'#ffffff',memberText:'#263746'}));chatDraft=JSON.parse(JSON.stringify(r.lines||[]));pendingReportAvatar=r.avatarData||null;$('reportAvatarInput').value='';$('reportAvatarPreview').src=pendingReportAvatar||'';$('reportAvatarPreview').classList.toggle('hidden',!pendingReportAvatar);$('reportAvatarStatus').textContent=pendingReportAvatar?'丸アイコン写真を設定済み':'写真を登録しなければ、丸アイコンは表示されません。';$('reportEditor').classList.remove('hidden');$('reportDate').value=r.date||selectedDate;$('reportPart').value=r.part||'1';reportMemberOptions(r.memberId);let event=data.events.find(e=>e.id===r.eventId)||data.events.find(e=>e.date===$('reportDate').value&&e.type==='meet');let part=event?.parts?.[$('reportPart').value];$('reportTickets').value=r.tickets||part?.ticketCounts?.[$('reportMember').value]||1;$('reportTitle').textContent=r.id?'レポートを編集':'レポートを作成';renderChat();updatePostText();$('reportEditor').scrollIntoView({behavior:'smooth',block:'start'})}
+function renderChat(){
+ let mid=$('reportMember').value,label=memberName(mid),cs=activeReportChatColors||data.settings.chatColors||{};
+ $('chatArea').innerHTML=chatDraft.length?chatDraft.map((l,i)=>{
+  if(l.type==='note'){
+   return `<div class="scene-note"><span class="scene-note-label">場面メモ</span>${escapeHtml(l.text)}<div class="note-tools"><button class="secondary" onclick="editLine(${i})">編集</button><button class="secondary" onclick="deleteLine(${i})">削除</button></div></div>`;
+  }
+  let me=l.who==='me',bg=me?(cs.meBg||'#a8e6b0'):(cs.memberBg||'#ffffff'),fg=me?(cs.meText||'#263746'):(cs.memberText||'#263746');
+  return `<div class="bubble ${me?'me':'member'}" style="background:${bg};color:${fg}"><span class="speaker">${me?'自分':escapeHtml(label)}</span><p style="font-size:${Number(l.fontSize)||18}px;white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(l.text)}</p><div class="bubbletools"><button class="secondary" onclick="editLine(${i})">編集</button><button class="secondary" onclick="insertSceneNoteAfter(${i})">ここにメモ</button><button class="secondary" onclick="deleteLine(${i})">削除</button></div></div>`;
+ }).join(''):'<div class="empty">会話を追加すると、ここに吹き出しが表示されます。</div>';
+}
+function syncReportTickets(){let event=data.events.find(e=>e.date===$('reportDate').value&&e.type==='meet');let part=event?.parts?.[$('reportPart').value];$('reportTickets').value=part?.ticketCounts?.[$('reportMember').value]||1}
+$('reportMember').onchange=()=>{renderChat();updatePostText();syncReportTickets();};
+$('reportAvatarInput').onchange=()=>{const f=$('reportAvatarInput').files[0];if(!f)return;if(!f.type.startsWith('image/'))return alert('画像ファイルを選択してください');if(f.size>5*1024*1024)return alert('写真は5MB以下にしてください');const rd=new FileReader();rd.onload=()=>{pendingReportAvatar=rd.result;$('reportAvatarPreview').src=pendingReportAvatar;$('reportAvatarPreview').classList.remove('hidden');$('reportAvatarStatus').textContent='丸アイコン写真を設定中';};rd.readAsDataURL(f)};
+$('removeReportAvatarBtn').onclick=()=>{pendingReportAvatar=null;$('reportAvatarInput').value='';$('reportAvatarPreview').src='';$('reportAvatarPreview').classList.add('hidden');$('reportAvatarStatus').textContent='写真を登録しなければ、丸アイコンは表示されません。'};
+$('reportDate').addEventListener('change',syncReportTickets);$('reportPart').addEventListener('change',syncReportTickets);
+let selectedSpeakerMode='me';
+document.querySelectorAll('.speaker-tab').forEach(btn=>btn.addEventListener('click',()=>{
+ selectedSpeakerMode=btn.dataset.who;
+ document.querySelectorAll('.speaker-tab').forEach(b=>b.classList.toggle('active',b===btn));
+ $('utterance').placeholder=selectedSpeakerMode==='thought'?'場面メモを入力…':'会話を入力。Enterで改行できます';
+ $('addUtteranceBtn').textContent=selectedSpeakerMode==='thought'?'場面メモを追加':'吹き出しを追加';
+ $('utterance').focus();
+}));
+$('addUtteranceBtn').onclick=()=>{
+ let text=$('utterance').value.trim();if(!text)return;
+ if(selectedSpeakerMode==='thought'){chatDraft.push({type:'note',text});}
+ else{chatDraft.push({who:selectedSpeakerMode,text,fontSize:parseInt($('utteranceSize').value,10)||18});}
+ $('utterance').value='';renderChat();updatePostText()
+};
+
+function insertSceneNoteAt(index){
+ let text=(prompt('場面メモを入力してください','私のつけている猫耳カチューシャを見て')||'').trim();
+ if(!text)return;
+ chatDraft.splice(index,0,{type:'note',text});
+ renderChat();updatePostText();
+}
+
+window.insertSceneNoteAfter=i=>insertSceneNoteAt(i+1);
+
+window.deleteLine=i=>{chatDraft.splice(i,1);renderChat();updatePostText()};
+window.editLine=i=>{let l=chatDraft[i],v=prompt(l.type==='note'?'場面メモを編集':'発言を編集',l.text);if(v!==null){l.text=v;renderChat();updatePostText()}};
+function updatePostText(){let m=memberById($('reportMember').value);let date=$('reportDate').value;let part=$('reportPart').value;let ev=data.events.find(e=>e.date===date);let raw=ev?.name||ev?.format||'ミーグリ';let eventLabel=(raw.match(/\d{2,3}(?:st|nd|rd|th)?シングル「[^」]+」/i)||[])[0]||raw.replace(/発売記念|オンラインミーグリ|オンライン・個別トーク会|オンライン|個別トーク会/g,'').trim()||'ミーグリ';let cleanTag=v=>{v=(v||'').trim().replace(/^#+/,'').replace(/\s+/g,'');return v?'#'+v:''};let tags=[m?.name?cleanTag(m.name):'','#乃木坂46',...((data.settings.tags||'#ミーグリレポ').split(/\s+/).map(cleanTag))].filter(Boolean);$('postText').value=`${m?.name||'推しメン'} · ${eventLabel}\n${date} ${part}部 · ${$('reportTickets').value||1}枚\n\n${[...new Set(tags)].join(' ')}`;}
+$('reportDate').onchange=updatePostText;$('reportPart').onchange=updatePostText;
+function saveReport(){let r={id:currentReportId||uid(),date:$('reportDate').value,part:$('reportPart').value,memberId:$('reportMember').value,tickets:Math.max(1,parseInt($('reportTickets').value,10)||1),hair:$('reportHair').value.trim(),outfit:$('reportOutfit').value.trim(),avatarData:pendingReportAvatar,chatColors:JSON.parse(JSON.stringify(activeReportChatColors||data.settings.chatColors||{meBg:'#a8e6b0',meText:'#263746',memberBg:'#ffffff',memberText:'#263746'})),lines:chatDraft,eventId:data.reports.find(x=>x.id===currentReportId)?.eventId||null};let ix=data.reports.findIndex(x=>x.id===r.id);if(ix>=0)data.reports[ix]=r;else data.reports.unshift(r);currentReportId=r.id;persist();$('reportTitle').textContent='レポートを編集';renderReports();renderMemories();return r}
+$('saveReportBtn').onclick=()=>{saveReport();alert('レポートを保存しました（このブラウザ内）')};
+$('closeReportBtn').onclick=()=>{$('reportEditor').classList.add('hidden');renderReports()};
+function renderReports(){let rs=data.reports;$('reportList').innerHTML=rs.length?rs.map(r=>{let m=memberById(r.memberId);return `<div class="part" style="margin-top:10px"><div class="parthead"><div><h3>${escapeHtml(m?.name||'メンバー')} · ${escapeHtml(r.date)} · ${r.part}部</h3><div class="muted">${r.lines.length}件の発言</div></div><div class="row"><button class="secondary" onclick="editReport('${r.id}')">開く</button><button class="danger" onclick="deleteReport('${r.id}')">削除</button></div></div></div>`}).join(''):'<div class="empty">まだレポートはありません。ミーグリの日程から「レポを書く」を押すか、新規作成してください。</div>'}
+window.editReport=id=>openReport(data.reports.find(x=>x.id===id));
+window.deleteReport=id=>{if(confirm('レポートを削除しますか？')){data.reports=data.reports.filter(x=>x.id!==id);persist();renderReports();renderMemories()}};
+function renderMemories(){
+ const totals=new Map();
+ data.members.forEach(m=>totals.set(m.id,{member:m,total:0,online:0,real:0,reports:0}));
+ // Count actual saved report tickets as completed conversations, rather than planned calendar tickets.
+ data.reports.forEach(r=>{
+  if(!totals.has(r.memberId))return;
+  const t=totals.get(r.memberId),n=Math.max(1,Number(r.tickets)||1);
+  const ev=data.events.find(e=>e.id===r.eventId)||data.events.find(e=>e.date===r.date&&e.type==='meet');
+  const desc=((ev?.format||'')+' '+(ev?.name||'')).toLowerCase();
+  const mode=/リアル|real/.test(desc)?'real':'online';
+  t.total+=n;t[mode]+=n;t.reports++;
+ });
+ const ranked=[...totals.values()].filter(x=>x.total||x.reports).sort((a,b)=>b.total-a.total);
+ $('memoryStats').innerHTML=`<div class="memory-stat-card"><span>保存したレポート</span><strong>${data.reports.length}</strong><small>件の思い出</small></div><div class="memory-stat-card"><span>参加チケット合計</span><strong>${ranked.reduce((n,x)=>n+x.total,0)}</strong><small>枚（保存済みレポート分）</small></div>`;
+ const stats=ranked.length?`<h3 class="memory-section-title">メンバー別の参加記録</h3><div class="memory-member-grid">${ranked.map(x=>`<div class="memory-member-card"><div class="memory-member-avatar"><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg></div><div class="memory-member-info"><strong>${escapeHtml(x.member.name)}</strong><span>オンライン ${x.online}枚 · リアル ${x.real}枚</span><small>合計 ${x.total}枚 · レポート ${x.reports}件</small></div></div>`).join('')}</div>`:'<div class="empty">カレンダーで参加メンバーとチケット枚数を登録すると、ここに思い出が集まります。</div>';
+ const cards=data.reports.length?data.reports.map(r=>{const m=memberById(r.memberId),ev=data.events.find(e=>e.id===r.eventId)||data.events.find(e=>e.date===r.date&&e.type==='meet'),title=ev?.name||'ミーグリ';const lines=(r.lines||[]).slice(0,2);return `<article class="memory-report-card"><div class="memory-card-top">${r.avatarData?`<img class="memory-card-avatar" src="${r.avatarData}" alt="">`:`<div class="memory-card-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg></div>`}<div class="memory-card-title"><strong>${escapeHtml(m?.name||'メンバー')}</strong><span>${escapeHtml(title)}</span><small>${escapeHtml(r.date)} · ${r.part}部 · ${r.tickets||1}枚</small></div><span class="memory-card-badge">${(r.lines||[]).length}発言</span></div><div class="memory-card-snippets">${lines.map(l=>l.type==='note'?`<p class="scene-note-export">📝 ${escapeHtml(l.text)}</p>`:`<p style="white-space:pre-wrap;overflow-wrap:anywhere"><b>${l.who==='me'?'自分':escapeHtml(m?.nickname||m?.name||'推し')}</b>：${escapeHtml(l.text)}</p>`).join('')||'<p class="muted">会話メモなし</p>'}</div><div class="row"><button class="secondary" onclick="editReport('${r.id}');activate('reports')">レポートを開く</button><button class="danger" onclick="deleteReport('${r.id}');renderMemories()">削除</button></div></article>`}).join(''):'<div class="empty">レポートを保存すると、ここにカード形式で追加されます。</div>';
+ $('memoryCards').innerHTML=stats+`<h3 class="memory-section-title">レポートの思い出</h3><div class="memory-report-grid">${cards}</div>`;
+}
+async function makeCanvas(){
+ let m=memberById($('reportMember').value),date=$('reportDate').value,part=$('reportPart').value,tickets=Math.max(1,parseInt($('reportTickets').value,10)||1),design=$('design').value;
+ let ev=data.events.find(e=>e.date===date),rawEvent=ev?.name||ev?.format||'ミーグリ';
+ let eventLabel=(rawEvent.match(/\d{2,3}(?:st|nd|rd|th)?シングル「[^」]+」/i)||[])[0]||rawEvent.replace(/発売記念|オンラインミーグリ|オンライン・個別トーク会|オンライン|個別トーク会/g,'').trim()||'ミーグリ';
+ const c=document.createElement('canvas'),ctx=c.getContext('2d'),w=900,pad=42,maxBubbleW=650,textPadX=18,textPadY=12;
+ const messages=[];
+ for(const l of chatDraft){
+  if(l.type==='note'){
+   const noteFs=19,lines=[];ctx.font=`${noteFs}px sans-serif`;const maxNoteW=w-pad*2;let line='';
+   for(const ch of l.text){if(ch==='\n'){lines.push(line);line='';continue}const test=line+ch;if(line&&ctx.measureText(test).width>maxNoteW){lines.push(line);line=ch}else line=test}
+   if(line||!lines.length)lines.push(line);
+   const lineH=27,width=Math.min(maxNoteW,Math.max(120,Math.ceil(Math.max(...lines.map(t=>ctx.measureText(t).width))+32)));
+   messages.push({note:true,fs:noteFs,lines,width,height:lines.length*lineH+34,lineH});
+   continue;
+  }
+  const me=l.who==='me',name=me?(data.settings.displayName||'自分'):(m?.nickname?.trim()||m?.name||'推しメン');
+  const fs=Math.min(36,Math.max(12,Number(l.fontSize)||18)),text=`${name}：${l.text}`,font=`${fs}px sans-serif`;
+  ctx.font=font;const maxTextW=maxBubbleW-textPadX*2;const lines=[];let line='';
+  for(const ch of text){
+   if(ch==='\n'){lines.push(line);line='';continue}
+   const test=line+ch;
+   if(line&&ctx.measureText(test).width>maxTextW){lines.push(line);line=ch}else line=test;
+  }
+  if(line||!lines.length)lines.push(line);
+  const lineH=Math.ceil(fs*1.42),width=Math.min(maxBubbleW,Math.max(90,Math.ceil(Math.max(...lines.map(t=>ctx.measureText(t).width))+textPadX*2)));
+  const height=lines.length*lineH+textPadY*2;
+  messages.push({me,fs,lines,width,height,lineH,note:false});
+ }
+ let hasAvatar=!!pendingReportAvatar,headerHeight=hasAvatar?390:260;
+ let totalMessages=messages.reduce((sum,msg)=>sum+msg.height+18,0);
+ c.width=w;c.height=Math.max(hasAvatar?580:440,headerHeight+totalMessages+pad+12);
+ ctx.fillStyle=design==='mint'?'#edf9f2':design==='simple'?'#ffffff':design==='blue'?'#eaf6fa':'#f0e8fa';ctx.fillRect(0,0,w,c.height);
+ ctx.textAlign='center';ctx.fillStyle='#392b4d';
+ if(hasAvatar){try{let img=await new Promise((resolve,reject)=>{let im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=pendingReportAvatar});let size=210,cx=w/2,cy=125;ctx.save();ctx.beginPath();ctx.arc(cx,cy,size/2,0,Math.PI*2);ctx.clip();ctx.drawImage(img,cx-size/2,cy-size/2,size,size);ctx.restore();ctx.strokeStyle='#d8c8ed';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,size/2,0,Math.PI*2);ctx.stroke()}catch(e){}}
+ let y=hasAvatar?255:58;ctx.fillStyle='#392b4d';ctx.font='bold 34px sans-serif';ctx.fillText(m?.name||'メンバー',w/2,y);y+=42;
+ ctx.font='bold 25px sans-serif';ctx.fillText(eventLabel,w/2,y);y+=36;ctx.font='22px sans-serif';ctx.fillText(date,w/2,y);y+=34;ctx.fillText(`${part}部  ·  ${tickets}枚`,w/2,y);y+=27;
+ ctx.strokeStyle='#c9b9df';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();y+=34;
+ const cs=activeReportChatColors||data.settings.chatColors||{};
+ for(const msg of messages){
+  if(msg.note){const x=(w-msg.width)/2;ctx.fillStyle='rgba(255,255,255,.72)';ctx.beginPath();roundRect(ctx,x,y,msg.width,msg.height,12);ctx.fill();ctx.strokeStyle='#d8cce5';ctx.setLineDash([5,4]);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#927eaa';ctx.font='bold 13px sans-serif';ctx.textAlign='center';ctx.fillText('場面メモ',w/2,y+18);ctx.fillStyle='#756a80';ctx.font=`${msg.fs}px sans-serif`;msg.lines.forEach((line,i)=>ctx.fillText(line,w/2,y+39+i*msg.lineH));}
+  else{const x=msg.me?w-pad-msg.width:pad;ctx.fillStyle=msg.me?(cs.meBg||'#a8e6b0'):(cs.memberBg||'#ffffff');ctx.beginPath();roundRect(ctx,x,y,msg.width,msg.height,18);ctx.fill();ctx.fillStyle=msg.me?(cs.meText||'#263746'):(cs.memberText||'#263746');ctx.font=`${msg.fs}px sans-serif`;ctx.textAlign='left';msg.lines.forEach((line,i)=>ctx.fillText(line,x+textPadX,y+textPadY+msg.fs+i*msg.lineH));}
+  y+=msg.height+18;
+ }
+ return c
+}
+function roundRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+async function canvasToPngBlob(canvas){
+ // Prefer toBlob, but fall back to data URL for browsers where blob encoding returns null.
+ try{
+  const blob=await new Promise((resolve,reject)=>{
+   try{canvas.toBlob(b=>b?resolve(b):resolve(null),'image/png')}
+   catch(err){reject(err)}
+  });
+  if(blob&&blob.size>0)return blob;
+ }catch(err){
+  console.warn('canvas.toBlob failed; trying data URL fallback',err);
+ }
+ try{
+  const dataUrl=canvas.toDataURL('image/png');
+  const comma=dataUrl.indexOf(',');
+  if(comma<0)throw new Error('画像データを読み取れませんでした');
+  const binary=atob(dataUrl.slice(comma+1));
+  const bytes=new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+  const blob=new Blob([bytes],{type:'image/png'});
+  if(blob.size>0)return blob;
+ }catch(err){
+  console.error('PNG fallback failed',err);
+  throw new Error(err?.name==='SecurityError'
+   ?'画像内の写真を安全に書き出せませんでした。プロフィール写真を一度外して試してください。'
+   :'PNG画像への変換に失敗しました。会話を短くするか、写真を外して再度お試しください。');
+ }
+ throw new Error('画像データが空でした。会話を短くするか、写真を外して再度お試しください。');
+}
+async function exportImage(){
+ saveReport();
+ const c=await makeCanvas();
+ const blob=await canvasToPngBlob(c);
+ const name=`ミーグリレポ_${$('reportDate').value}_${$('reportPart').value}部.png`;
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),60000);
+ return new File([blob],name,{type:'image/png'});
+}
+$('exportImageBtn').onclick=async()=>{try{await exportImage();}catch(err){console.error(err);alert(err?.message||'画像を作成できませんでした。会話内容を確認して、もう一度試してください。')}};
+$('shareBtn').onclick=async()=>{
+ // Keep the user's edited post text. Only generate defaults if the preview is empty.
+ if(!$('postText').value.trim())updatePostText();
+ const text=$('postText').value.trim();
+ const intentUrl='https://x.com/intent/tweet?text='+encodeURIComponent(text);
+ const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+ // On desktop, open a blank tab synchronously from the click so the browser won't block X later.
+ let xWindow=null;
+ if(!isMobile){
+  xWindow=window.open('about:blank','_blank');
+ }
+ try{
+  saveReport();
+  const canvas=await makeCanvas();
+  const blob=await canvasToPngBlob(canvas);
+  const file=new File([blob],`乃木レポ_${$('reportDate').value||'report'}.png`,{type:'image/png'});
+  // Use the system share sheet only on phones/tablets. Windows Share is not the X editor.
+  if(isMobile&&navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   try{
+    await navigator.share({files:[file],text,title:'乃木レポ'});
+    return;
+   }catch(e){
+    if(e.name==='AbortError')return;
+    console.warn('Native share failed; falling back to download + X compose.',e);
+   }
+  }
+  // Desktop or unsupported mobile: download image and open X's compose page with text/hashtags.
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),60000);
+  // Put the generated PNG on the clipboard where supported. The X compose page cannot
+  // receive a local file attachment from an intent URL, but the user can paste it with Ctrl+V.
+  let imageCopied=false;
+  try{
+   if(navigator.clipboard?.write && window.ClipboardItem){
+    const item=new ClipboardItem({'image/png':blob});
+    await navigator.clipboard.write([item]);
+    imageCopied=true;
+   }
+  }catch(e){console.warn('Could not copy image to clipboard; use the downloaded PNG.',e)}
+  // Do NOT write text to the clipboard after copying the PNG: that would replace the image.
+  // The post text and hashtags are already prefilled in X's compose URL.
+  if(xWindow&&!xWindow.closed){
+   xWindow.location.href=intentUrl;
+  }else if(isMobile){
+   // fallback for mobile browsers without file sharing
+   const opened=window.open(intentUrl,'_blank');
+   if(!opened)location.href=intentUrl;
+  }else{
+   if(confirm('Xの編集画面を新しいタブで開けませんでした。今の画面でXを開く？'))location.href=intentUrl;
+  }
+  alert(imageCopied
+   ?'Xの投稿編集画面を開きました。レポート画像をクリップボードにコピーしてあります。投稿欄で Ctrl+V を押すと画像を貼り付けられます。投稿文とハッシュタグは入力済みなので、確認して投稿してください。'
+   :'Xの投稿編集画面を開きました。保存されたPNGをXの画像ボタンから選んで添付してください。投稿文とハッシュタグは入力済みです。');
+ }catch(err){
+  if(xWindow&&!xWindow.closed) xWindow.close();
+  console.error(err);
+  alert(err?.message||'レポート画像を作成できませんでした。会話を短くするか、写真を外してもう一度試してください。');
+ }
+};
+
+
+let customIconData = data.settings?.homeIconData || '';
+function setHomeIconStyle(style,save=true){
+ if(!['custom','rep','heart'].includes(style))style='rep';
+ document.querySelectorAll('input[name="homeIconStyle"]').forEach(el=>el.checked=el.value===style);
+ const preview=$('customIconPreview');
+ if(preview)preview.src=customIconData||'./icons/nogirepo-rep-180.png';
+ const manifest=$('appManifest'),touch=$('appleTouchIcon');
+ if(style==='heart'){
+  if(manifest)manifest.href='./manifest-heart.webmanifest';
+  if(touch)touch.href='./icons/nogirepo-heart-180.png';
+ }else{
+  if(manifest)manifest.href='./manifest-rep.webmanifest';
+  if(touch)touch.href=style==='custom'&&customIconData?customIconData:'./icons/nogirepo-rep-180.png';
+ }
+ if(save){data.settings.homeIconStyle=style;data.settings.homeIconData=customIconData;persist();}
+}
+$('customIconFile').addEventListener('change',ev=>{
+ const file=ev.target.files?.[0];if(!file)return;
+ if(file.size>4*1024*1024){alert('画像は4MB以下にしてください');ev.target.value='';return;}
+ if(!file.type.startsWith('image/')){alert('画像ファイルを選択してください');return;}
+ const reader=new FileReader();
+ reader.onload=()=>{
+  const img=new Image();
+  img.onload=()=>{
+   const size=512,canvas=document.createElement('canvas');canvas.width=size;canvas.height=size;
+   const ctx=canvas.getContext('2d'),scale=Math.max(size/img.width,size/img.height),w=img.width*scale,h=img.height*scale;
+   ctx.drawImage(img,(size-w)/2,(size-h)/2,w,h);
+   customIconData=canvas.toDataURL('image/png');
+   $('customIconPreview').src=customIconData;
+   document.querySelector('input[name="homeIconStyle"][value="custom"]').checked=true;
+  };
+  img.onerror=()=>alert('この画像は読み込めませんでした。別の画像を選んでください。');
+  img.src=String(reader.result||'');
+ };
+ reader.readAsDataURL(file);
+});
+document.querySelectorAll('input[name="homeIconStyle"]').forEach(el=>el.addEventListener('change',()=>setHomeIconStyle(el.value,false)));
+$('saveHomeIconBtn').onclick=()=>{const selected=document.querySelector('input[name="homeIconStyle"]:checked')?.value||'rep';if(selected==='custom'&&!customIconData)return alert('先に自分の画像を選択してください');setHomeIconStyle(selected,true);alert('アイコン設定を保存しました。ホーム画面のアイコンへの反映は端末によって異なります。');};
+setHomeIconStyle(data.settings?.homeIconStyle||'rep',false);
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+
+// Optional profile controls may be absent in this layout; do not stop the app script.
+if($('saveProfileBtn') && $('userDisplayName') && $('appBgColor')){
+  $('saveProfileBtn').onclick=()=>{data.settings.displayName=$('userDisplayName').value.trim();data.settings.appBgColor=$('appBgColor').value;document.documentElement.style.setProperty('--bg',data.settings.appBgColor);persist();alert('プロフィールを保存しました')};
+}
+$('saveSettingsBtn').onclick=()=>{data.settings.tags=$('globalTags').value;data.settings.design=$('design').value;persist();alert('設定を保存しました')};
+function updateUtteranceSizePreview(){const size=Number($('utteranceSize').value)||18;$('utteranceSizeValue').textContent=`${size} px`;$('utteranceSizeSample').style.fontSize=`${size}px`;}
+$('utteranceSize').addEventListener('input',updateUtteranceSizePreview);
+updateUtteranceSizePreview();
+function updateChatColorPreview(){
+ const defs=[
+  ['meBubbleColor','meBubbleHex'],['meTextColor','meTextHex'],
+  ['memberBubbleColor','memberBubbleHex'],['memberTextColor','memberTextHex']
+ ];
+ defs.forEach(([inputId,hexId])=>{const el=$(inputId),hex=$(hexId);hex.textContent=el.value.toUpperCase();el.style.setProperty('--picker-border',el.value)});
+ $('previewMeBubble').style.background=$('meBubbleColor').value;
+ $('previewMeBubble').style.color=$('meTextColor').value;
+ $('previewMeBubble').style.borderColor=$('meBubbleColor').value;
+ $('previewMemberBubble').style.background=$('memberBubbleColor').value;
+ $('previewMemberBubble').style.color=$('memberTextColor').value;
+ $('previewMemberBubble').style.borderColor=$('memberBubbleColor').value;
+}
+['meBubbleColor','meTextColor','memberBubbleColor','memberTextColor'].forEach(id=>$(id).addEventListener('input',updateChatColorPreview));
+$('saveChatColorsBtn').onclick=()=>{data.settings.chatColors={meBg:$('meBubbleColor').value,meText:$('meTextColor').value,memberBg:$('memberBubbleColor').value,memberText:$('memberTextColor').value};persist();updateChatColorPreview();alert('今後作成するレポートの会話色を保存しました。既存レポートの色は変更していません。')};
+
+$('exportDataBtn').onclick=()=>{let b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nogizaka-meet-backup.json';a.click()};
+$('importData').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let v=JSON.parse(await f.text());if(!v.members||!v.events||!v.reports)throw Error();data=v;persist();renderCalendar();alert('データを読み込みました')}catch{alert('読み込めるデータではありません')}};
+
+
+const supabaseUrl=window.NOGIREPO_SUPABASE_URL||'';
+const supabaseAnonKey=window.NOGIREPO_SUPABASE_ANON_KEY||'';
+const authReady=!!(supabaseUrl&&supabaseAnonKey&&window.supabase?.createClient);
+function rememberLoginEnabled(){
+ try { const saved=localStorage.getItem('nogirepoRememberLogin'); return saved===null?true:saved==='true'; }
+ catch(e){ return true; }
+}
+function authSessionStorage(){
+ return {
+  getItem(key){
+   try{return rememberLoginEnabled()?localStorage.getItem(key):sessionStorage.getItem(key)}catch(e){return null}
+  },
+  setItem(key,value){
+   try{
+    if(rememberLoginEnabled()){localStorage.setItem(key,value);sessionStorage.removeItem(key)}
+    else{sessionStorage.setItem(key,value);localStorage.removeItem(key)}
+   }catch(e){}
+  },
+  removeItem(key){
+   try{localStorage.removeItem(key);sessionStorage.removeItem(key)}catch(e){}
+  }
+ };
+}
+if(authReady){supabaseClient=window.supabase.createClient(supabaseUrl,supabaseAnonKey,{auth:{persistSession:true,autoRefreshToken:true,storage:authSessionStorage()}});}
+function showAuthError(message){$('authError').textContent=message;$('authError').classList.remove('hidden');}
+function clearAuthError(){$('authError').textContent='';$('authError').classList.add('hidden');}
+function openAuthModal(){
+ $('authModal').classList.remove('hidden');clearAuthError();
+ $('authSetupNote').classList.toggle('hidden',authReady);
+ $('accountBtn').textContent=authUser?'アカウント':'ログイン';
+ $('rememberLogin').checked=rememberLoginEnabled();
+ $('rememberLogin').closest('label').classList.remove('hidden');
+ $('authSubmitBtn').classList.toggle('hidden',!!authUser);
+ $('authModeBtn').classList.toggle('hidden',!!authUser);
+ $('authForgotBtn').classList.toggle('hidden',!!authUser);
+ $('authLogoutBtn').classList.toggle('hidden',!authUser);
+ $('authEmail').disabled=!!authUser;$('authPassword').disabled=!!authUser;
+ $('authTitle').textContent=authUser?'アカウント':'乃木レポにログイン';
+ $('authIntro').textContent=authUser?'ログイン中です。予定やレポートはこのアカウントに同期されます。':(rememberLoginEnabled()?'メールアドレスとパスワードでログイン。次回から自動ログインできます。':'メールアドレスとパスワードでログイン。このブラウザのセッション中のみログイン状態を保持します。');
+}
+function closeAuthModal(){$('authModal').classList.add('hidden');}
+$('rememberLogin').checked=rememberLoginEnabled();
+$('rememberLogin').addEventListener('change',()=>{
+ const keep=$('rememberLogin').checked;
+ try{
+  localStorage.setItem('nogirepoRememberLogin',keep?'true':'false');
+  const key=supabaseClient?.auth?.storageKey;
+  if(key){
+   if(keep){const value=sessionStorage.getItem(key);if(value){localStorage.setItem(key,value);sessionStorage.removeItem(key)}}
+   else{const value=localStorage.getItem(key);if(value){sessionStorage.setItem(key,value);localStorage.removeItem(key)}}
+  }
+ }catch(e){}
+ $('authIntro').textContent=keep?'ログイン状態をこの端末に保存します。':'このブラウザのセッション中のみログイン状態を保持します。';
+});
+$('accountBtn').onclick=openAuthModal;
+$('closeAuthBtn').onclick=closeAuthModal;
+$('authModal').addEventListener('click',e=>{if(e.target===$('authModal'))closeAuthModal()});
+$('authModeBtn').onclick=()=>{authMode=authMode==='login'?'signup':'login';$('authTitle').textContent=authMode==='login'?'乃木レポにログイン':'乃木レポのアカウント作成';$('authSubmitBtn').textContent=authMode==='login'?'ログイン':'アカウントを作成';$('authModeBtn').textContent=authMode==='login'?'新規登録':'ログインに戻る';$('authConfirmWrap').classList.toggle('hidden',authMode!=='signup');$('authPassword').autocomplete=authMode==='signup'?'new-password':'current-password';clearAuthError();};
+async function syncCloudToLocal(user){
+ if(!supabaseClient||!user)return;
+ const {data:row,error}=await supabaseClient.from('user_data').select('payload').eq('user_id',user.id).maybeSingle();
+ if(error)throw error;
+ if(row?.payload){
+  const cloud=row.payload;
+  data={...initial,...cloud,members:Array.isArray(cloud.members)?cloud.members:initial.members,events:Array.isArray(cloud.events)?cloud.events:initial.events,reports:Array.isArray(cloud.reports)?cloud.reports:[],settings:{...initial.settings,...(cloud.settings||{})}};
+  localStorage.setItem('nogizakaMeetApp',JSON.stringify(data));
+ }else{
+  await supabaseClient.from('user_data').upsert({user_id:user.id,payload:data,updated_at:new Date().toISOString()},{onConflict:'user_id'});
+ }
+ refreshAppFromData();
+}
+function refreshAppFromData(){
+ renderCalendar();renderMembers();renderTicketStats();renderReports();renderMemories();renderTodayAgenda();
+ $('globalTags').value=data.settings.tags||'#乃木坂46 #ミーグリレポ';$('design').value=data.settings.design||'purple';
+ $('userDisplayName').value=data.settings.displayName||'';$('appBgColor').value=data.settings.appBgColor||'#faf8fd';
+ document.documentElement.style.setProperty('--bg',data.settings.appBgColor||'#faf8fd');
+ const cc=data.settings.chatColors||{};$('meBubbleColor').value=cc.meBg||'#a8e6b0';$('meTextColor').value=cc.meText||'#263746';$('memberBubbleColor').value=cc.memberBg||'#ffffff';$('memberTextColor').value=cc.memberText||'#263746';updateChatColorPreview();
+ customIconData=data.settings.homeIconData||customIconData;setHomeIconStyle(data.settings.homeIconStyle||'rep',false);
+}
+$('authSubmitBtn').onclick=async()=>{
+ clearAuthError();
+ if(!authReady)return showAuthError('認証サービスがまだ設定されていません。supabase-config.jsにURLと公開用anon keyを設定し、データベースを準備してください。');
+ const email=$('authEmail').value.trim(),password=$('authPassword').value,confirm=$('authConfirm').value;
+ if(!email||!password)return showAuthError('メールアドレスとパスワードを入力してください。');
+ if(authMode==='signup'&&password!==confirm)return showAuthError('確認用パスワードが一致しません。');
+ $('authSubmitBtn').disabled=true;
+ try{
+  let result;
+  if(authMode==='signup'){
+   result=await supabaseClient.auth.signUp({email,password});
+   if(result.error)throw result.error;
+   if(!result.data.session){showAuthError('確認メールを送信しました。メール内のリンクで確認後、この画面からログインしてください。');authMode='login';$('authSubmitBtn').textContent='ログイン';$('authModeBtn').textContent='新規登録';$('authConfirmWrap').classList.add('hidden');return;}
+   authUser=result.data.user;
+  }else{
+   result=await supabaseClient.auth.signInWithPassword({email,password});
+   if(result.error)throw result.error;
+   authUser=result.data.user;
+  }
+  await syncCloudToLocal(authUser);
+  $('accountBtn').textContent='アカウント';
+  closeAuthModal();
+  alert('ログインしました。データを同期しました。');
+ }catch(err){showAuthError(err?.message||'ログインに失敗しました。入力内容と接続設定を確認してください。');}
+ finally{$('authSubmitBtn').disabled=false;}
+};
+$('authForgotBtn').onclick=async()=>{
+ clearAuthError();
+ if(!authReady)return showAuthError('パスワード再設定を使うには認証サービスの設定が必要です。');
+ const email=$('authEmail').value.trim();if(!email)return showAuthError('先にメールアドレスを入力してください。');
+ try{const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)throw error;showAuthError('パスワード再設定メールを送信しました。');$('authError').style.background='#e8f5e9';$('authError').style.color='#246b37';}
+ catch(err){showAuthError(err?.message||'再設定メールを送信できませんでした。');}
+};
+$('authLogoutBtn').onclick=logoutAccount;
+async function logoutAccount(){
+ if(!supabaseClient)return;
+ if(!confirm('ログアウトしますか？この端末に表示中のアカウントデータを消し、次回ログイン時にその人のデータを読み込みます。クラウド上のデータは削除されません。'))return;
+ try{await supabaseClient.auth.signOut();}catch(err){showAuthError(err?.message||'ログアウトに失敗しました。');return;}
+ authUser=null;
+ // Avoid exposing the previous user's private data to the next person on a shared device.
+ data=structuredClone(initial);
+ try{localStorage.setItem('nogizakaMeetApp',JSON.stringify(data));}catch(e){}
+ $('accountBtn').textContent='ログイン';closeAuthModal();refreshAppFromData();alert('ログアウトしました。クラウド上のデータはアカウントに保存されています。');
+}
+$('accountBtn').addEventListener('contextmenu',e=>{e.preventDefault();if(authUser)logoutAccount()});
+if(authReady){
+ supabaseClient.auth.getSession().then(async({data:{session}})=>{
+  if(session?.user){authUser=session.user;$('accountBtn').textContent='アカウント';try{await syncCloudToLocal(authUser)}catch(err){console.error(err);}}
+ }).catch(console.error);
+ supabaseClient.auth.onAuthStateChange((_event,session)=>{authUser=session?.user||null;$('accountBtn').textContent=authUser?'アカウント':'ログイン';});
+}
+
+renderCalendar();renderMembers();renderTicketStats();renderReports();renderMemories();renderTodayAgenda();$('globalTags').value=data.settings.tags||'#乃木坂46 #ミーグリレポ';$('design').value=data.settings.design||'purple';$('userDisplayName').value=data.settings.displayName||'';$('appBgColor').value=data.settings.appBgColor||'#faf8fd';document.documentElement.style.setProperty('--bg',data.settings.appBgColor||'#faf8fd');const cc=data.settings.chatColors||{};$('meBubbleColor').value=cc.meBg||'#a8e6b0';$('meTextColor').value=cc.meText||'#263746';$('memberBubbleColor').value=cc.memberBg||'#ffffff';$('memberTextColor').value=cc.memberText||'#263746';updateChatColorPreview();
+</script>
+</body></html>

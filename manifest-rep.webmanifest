@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "乃木レポ",
+  "short_name": "乃木レポ",
+  "description": "乃木坂46のミーグリ予定・会話レポート・思い出を管理",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#faf8fd",
+  "theme_color": "#7652a5",
+  "icons": [
+    {
+      "src": "./icons/nogirepo-rep-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/nogirepo-rep-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
