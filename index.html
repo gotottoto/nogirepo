@@ -673,13 +673,21 @@ async function makeCanvas(){
   const height=lines.length*lineH+textPadY*2;
   messages.push({me,fs,lines,width,height,lineH,note:false});
  }
- let hasAvatar=!!pendingReportAvatar,headerHeight=hasAvatar?390:260;
+ let hasAvatar=!!pendingReportAvatar,headerHeight=hasAvatar?370:260;
  let totalMessages=messages.reduce((sum,msg)=>sum+msg.height+18,0);
- c.width=w;c.height=Math.max(hasAvatar?580:440,headerHeight+totalMessages+pad+12);
+ c.width=w;c.height=Math.max(hasAvatar?560:440,headerHeight+totalMessages+pad+12);
  ctx.fillStyle=design==='mint'?'#edf9f2':design==='simple'?'#ffffff':design==='blue'?'#eaf6fa':'#f0e8fa';ctx.fillRect(0,0,w,c.height);
  ctx.textAlign='center';ctx.fillStyle='#392b4d';
- if(hasAvatar){try{let img=await new Promise((resolve,reject)=>{let im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=pendingReportAvatar});let size=210,cx=w/2,cy=125;ctx.save();ctx.beginPath();ctx.arc(cx,cy,size/2,0,Math.PI*2);ctx.clip();ctx.drawImage(img,cx-size/2,cy-size/2,size,size);ctx.restore();ctx.strokeStyle='#d8c8ed';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,size/2,0,Math.PI*2);ctx.stroke()}catch(e){}}
- let y=hasAvatar?255:58;ctx.fillStyle='#392b4d';ctx.font='bold 34px sans-serif';ctx.fillText(m?.name||'メンバー',w/2,y);y+=42;
+ if(hasAvatar){try{
+  let img=await new Promise((resolve,reject)=>{let im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=pendingReportAvatar});
+  // Crop to a centered square before drawing into the circle, preserving the source aspect ratio.
+  const size=170,cx=w/2,cy=105,side=Math.min(img.naturalWidth,img.naturalHeight);
+  const sx=(img.naturalWidth-side)/2,sy=(img.naturalHeight-side)/2;
+  ctx.save();ctx.beginPath();ctx.arc(cx,cy,size/2,0,Math.PI*2);ctx.clip();
+  ctx.drawImage(img,sx,sy,side,side,cx-size/2,cy-size/2,size,size);ctx.restore();
+  ctx.strokeStyle='#d8c8ed';ctx.lineWidth=5;ctx.beginPath();ctx.arc(cx,cy,size/2,0,Math.PI*2);ctx.stroke()
+ }catch(e){}}
+ let y=hasAvatar?235:58;ctx.fillStyle='#392b4d';ctx.font='bold 34px sans-serif';ctx.fillText(m?.name||'メンバー',w/2,y);y+=42;
  ctx.font='bold 25px sans-serif';ctx.fillText(eventLabel,w/2,y);y+=36;ctx.font='22px sans-serif';ctx.fillText(date,w/2,y);y+=34;ctx.fillText(`${part}部  ·  ${tickets}枚`,w/2,y);y+=27;
  ctx.strokeStyle='#c9b9df';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();y+=34;
  const cs=activeReportChatColors||data.settings.chatColors||{};
