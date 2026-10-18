@@ -739,37 +739,38 @@ async function exportImage(){
 }
 $('exportImageBtn').onclick=async()=>{try{await exportImage();}catch(err){console.error(err);alert(err?.message||'画像を作成できませんでした。会話内容を確認して、もう一度試してください。')}};
 $('shareBtn').onclick=async()=>{
- // Open X immediately from the user's click so popup blockers do not stop it after image generation.
  const text=$('postText').value.trim() || (updatePostText(), $('postText').value.trim());
- const intentUrl='https://x.com/intent/tweet?text='+encodeURIComponent(text);
- let xWindow=null;
- try{xWindow=window.open('about:blank','_blank');}catch(e){console.warn('Could not open X tab',e);}
+ const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
  try{
   saveReport();
   const canvas=await makeCanvas();
   const blob=await canvasToPngBlob(canvas);
   const file=new File([blob],`乃木レポ_${$('reportDate').value||'report'}.png`,{type:'image/png'});
+  if(isMobile && navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+   // Best-effort one-tap: share the generated image and caption through the native share sheet.
+   // Safari may reject this if image generation takes long enough to expire transient user activation.
+   try{
+    await navigator.share({files:[file],text});
+    return;
+   }catch(shareErr){
+    if(shareErr && shareErr.name==='AbortError') return;
+    console.warn('Native share failed; downloading image and opening X as fallback',shareErr);
+   }
+  }
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),60000);
-  const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const intentUrl='https://x.com/intent/tweet?text='+encodeURIComponent(text);
   if(isMobile){
-   // Mobile browsers may open the download UI in a separate tab and block scripted popup navigation.
-   // Navigate the current tab directly to X after starting the image download.
-   if(xWindow&&!xWindow.closed)xWindow.close();
-   alert('画像を保存しました。続けてXの投稿画面を開きます。X側で保存した画像を添付してください。');
+   // Same-tab fallback is more reliable than window.open in Safari.
    location.href=intentUrl;
-  }else if(xWindow&&!xWindow.closed){
-   xWindow.location.href=intentUrl;
-   alert('Xの投稿画面を開きました。ダウンロードされたPNG画像をXの投稿欄に添付して、投稿文を確認してください。');
+   alert('画像をダウンロードしました。Xの投稿画面で画像を添付してください。お使いのSafariでは共有が制限されたため、画像添付は手動になります。');
   }else{
-   alert('新しいタブがブロックされたため、この画面でXを開きます。画像はダウンロードされています。');
-   location.href=intentUrl;
+   window.open(intentUrl,'_blank','noopener');
   }
  }catch(err){
-  if(xWindow&&!xWindow.closed)xWindow.close();
   console.error(err);
-  alert(err?.message||'レポート画像を作成できませんでした。会話を短くするか、写真を外してもう一度試してください。');
+  alert(err?.message||'画像の生成に失敗しました。もう一度お試しください。');
  }
 };
 
