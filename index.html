@@ -744,11 +744,17 @@ $('shareBtn').onclick=async()=>{
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),60000);
-  if(xWindow&&!xWindow.closed){
+  const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if(isMobile){
+   // Mobile browsers may open the download UI in a separate tab and block scripted popup navigation.
+   // Navigate the current tab directly to X after starting the image download.
+   if(xWindow&&!xWindow.closed)xWindow.close();
+   alert('画像を保存しました。続けてXの投稿画面を開きます。X側で保存した画像を添付してください。');
+   location.href=intentUrl;
+  }else if(xWindow&&!xWindow.closed){
    xWindow.location.href=intentUrl;
    alert('Xの投稿画面を開きました。ダウンロードされたPNG画像をXの投稿欄に添付して、投稿文を確認してください。');
   }else{
-   // Popup blocked: navigate this tab as a reliable fallback.
    alert('新しいタブがブロックされたため、この画面でXを開きます。画像はダウンロードされています。');
    location.href=intentUrl;
   }
