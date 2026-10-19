@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nogirepo-pwa-v49';
+const CACHE_NAME = 'nogirepo-pwa-v50';
 const CORE = [
   './','./index.html','./supabase-config.js',
   './manifest-rep.webmanifest','./manifest-heart.webmanifest',
@@ -6,11 +6,15 @@ const CORE = [
   './icons/nogirepo-heart-180.png','./icons/nogirepo-heart-192.png','./icons/nogirepo-heart-512.png'
 ];
 
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil((async () => {
     const cache = await caches.open(CACHE_NAME);
-    try { await cache.addAll(CORE); } catch (error) { console.warn('Some offline assets could not be cached', error); }
-    await self.skipWaiting();
+    try { await cache.addAll(CORE); } catch (error) { console.warn('一部のオフライン用ファイルを保存できませんでした', error); }
   })());
 });
 
@@ -28,7 +32,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Always fetch page navigations from the network first, so GitHub Pages updates appear without a query string.
+  // Page navigations always use the network. Fall back to the cached page only when offline.
   if (request.mode === 'navigate' || request.destination === 'document') {
     event.respondWith((async () => {
       try {
@@ -45,7 +49,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Network-first for same-site assets; use cache only when offline.
   event.respondWith((async () => {
     try {
       const response = await fetch(request, { cache: 'no-cache' });
