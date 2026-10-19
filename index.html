@@ -2,6 +2,9 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="theme-color" content="#dff3fa">
 <link id="appManifest" rel="manifest" href="./manifest-rep.webmanifest">
 <link id="appleTouchIcon" rel="apple-touch-icon" href="./icons/nogirepo-rep-180.png">
@@ -825,7 +828,14 @@ $('customIconFile').addEventListener('change',ev=>{
 document.querySelectorAll('input[name="homeIconStyle"]').forEach(el=>el.addEventListener('change',()=>setHomeIconStyle(el.value,false)));
 $('saveHomeIconBtn').onclick=()=>{const selected=document.querySelector('input[name="homeIconStyle"]:checked')?.value||'rep';if(selected==='custom'&&!customIconData)return alert('先に自分の画像を選択してください');setHomeIconStyle(selected,true);alert('アイコン設定を保存しました。ホーム画面のアイコンへの反映は端末によって異なります。');};
 setHomeIconStyle(data.settings?.homeIconStyle||'rep',false);
-if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+ window.addEventListener('load',async()=>{
+  try{
+   const registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
+   await registration.update();
+  }catch(error){console.warn('乃木レポの更新確認に失敗しました',error);}
+ });
+}
 
 // Optional profile controls may be absent in this layout; do not stop the app script.
 if($('saveProfileBtn') && $('userDisplayName') && $('appBgColor')){
