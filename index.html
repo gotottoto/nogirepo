@@ -829,10 +829,17 @@ document.querySelectorAll('input[name="homeIconStyle"]').forEach(el=>el.addEvent
 $('saveHomeIconBtn').onclick=()=>{const selected=document.querySelector('input[name="homeIconStyle"]:checked')?.value||'rep';if(selected==='custom'&&!customIconData)return alert('先に自分の画像を選択してください');setHomeIconStyle(selected,true);alert('アイコン設定を保存しました。ホーム画面のアイコンへの反映は端末によって異なります。');};
 setHomeIconStyle(data.settings?.homeIconStyle||'rep',false);
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+ let reloadedForWorkerUpdate=false;
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{
+  if(reloadedForWorkerUpdate)return;
+  reloadedForWorkerUpdate=true;
+  window.location.reload();
+ });
  window.addEventListener('load',async()=>{
   try{
    const registration=await navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'});
    await registration.update();
+   if(registration.waiting)registration.waiting.postMessage({type:'SKIP_WAITING'});
   }catch(error){console.warn('乃木レポの更新確認に失敗しました',error);}
  });
 }
