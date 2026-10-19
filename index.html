@@ -408,7 +408,7 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #d6e7ed;bord
 </div>
 <div class="panel"><h2>レポート・アプリ設定</h2>
 <div class="field"><label>共通ハッシュタグ（スペース区切り）</label><input id="globalTags" value="#乃木坂46 #ミーグリレポ"></div>
-<div class="field" style="margin-top:12px"><label>レポート画像のデザイン</label><select id="design"><option value="purple">乃木坂パープル</option><option value="blue">淡いブルー</option><option value="simple">シンプル白</option><option value="mint">ミントグリーン</option></select></div>
+<div class="field color-setting" style="margin-top:12px"><label>レポート画像の背景色</label><input id="reportBgColor" type="color" value="#f0e8fa"><output id="reportBgColorHex">#F0E8FA</output><p class="muted">メンバーカラーなど、好きな色を選べます。</p></div>
 <div class="row" style="margin-top:14px"><button id="saveSettingsBtn">設定を保存</button><button class="secondary" id="exportDataBtn">データを書き出す</button><label class="secondary" style="padding:10px 14px;border-radius:12px;cursor:pointer">データを読み込む<input id="importData" type="file" accept="application/json" style="display:none"></label></div>
 <p class="muted" style="margin-top:12px">メンバー名簿は公式メンバー一覧と公開されている卒業生一覧をもとに登録した初期データです。卒業・加入状況は変わるため、公開運用時は定期確認が必要です。データを書き出してバックアップできます。</p>
 </div>
@@ -678,7 +678,7 @@ async function makeCanvas(){
  let hasAvatar=!!pendingReportAvatar,headerHeight=hasAvatar?370:260;
  let totalMessages=messages.reduce((sum,msg)=>sum+msg.height+18,0);
  c.width=w;c.height=Math.max(hasAvatar?560:440,headerHeight+totalMessages+pad+12);
- ctx.fillStyle=design==='mint'?'#edf9f2':design==='simple'?'#ffffff':design==='blue'?'#eaf6fa':'#f0e8fa';ctx.fillRect(0,0,w,c.height);
+ ctx.fillStyle=data.settings.reportBgColor||(design==='mint'?'#edf9f2':design==='simple'?'#ffffff':design==='blue'?'#eaf6fa':'#f0e8fa');ctx.fillRect(0,0,w,c.height);
  ctx.textAlign='center';ctx.fillStyle='#392b4d';
  if(hasAvatar){try{
   let img=await new Promise((resolve,reject)=>{let im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src=pendingReportAvatar});
@@ -831,7 +831,7 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.a
 if($('saveProfileBtn') && $('userDisplayName') && $('appBgColor')){
   $('saveProfileBtn').onclick=()=>{data.settings.displayName=$('userDisplayName').value.trim();data.settings.appBgColor=$('appBgColor').value;document.documentElement.style.setProperty('--bg',data.settings.appBgColor);persist();alert('プロフィールを保存しました')};
 }
-$('saveSettingsBtn').onclick=()=>{data.settings.tags=$('globalTags').value;data.settings.design=$('design').value;persist();alert('設定を保存しました')};
+$('reportBgColor').addEventListener('input',()=>{$('reportBgColorHex').textContent=$('reportBgColor').value.toUpperCase()});$('saveSettingsBtn').onclick=()=>{data.settings.tags=$('globalTags').value;data.settings.reportBgColor=$('reportBgColor').value;persist();alert('設定を保存しました')};
 function updateUtteranceSizePreview(){const size=Number($('utteranceSize').value)||18;$('utteranceSizeValue').textContent=`${size} px`;$('utteranceSizeSample').style.fontSize=`${size}px`;}
 $('utteranceSize').addEventListener('input',updateUtteranceSizePreview);
 updateUtteranceSizePreview();
@@ -928,7 +928,7 @@ async function syncCloudToLocal(user){
 }
 function refreshAppFromData(){
  renderCalendar();renderMembers();renderTicketStats();renderReports();renderMemories();renderTodayAgenda();
- $('globalTags').value=data.settings.tags||'#乃木坂46 #ミーグリレポ';$('design').value=data.settings.design||'purple';
+ $('globalTags').value=data.settings.tags||'#乃木坂46 #ミーグリレポ';$('reportBgColor').value=data.settings.reportBgColor||'#f0e8fa';$('reportBgColorHex').textContent=($('reportBgColor').value||'#f0e8fa').toUpperCase();
  $('userDisplayName').value=data.settings.displayName||'';$('appBgColor').value=data.settings.appBgColor||'#faf8fd';
  document.documentElement.style.setProperty('--bg',data.settings.appBgColor||'#faf8fd');
  const cc=data.settings.chatColors||{};$('meBubbleColor').value=cc.meBg||'#a8e6b0';$('meTextColor').value=cc.meText||'#263746';$('memberBubbleColor').value=cc.memberBg||'#ffffff';$('memberTextColor').value=cc.memberText||'#263746';updateChatColorPreview();
@@ -986,6 +986,6 @@ if(authReady){
  supabaseClient.auth.onAuthStateChange((_event,session)=>{authUser=session?.user||null;$('accountBtn').textContent=authUser?'アカウント':'ログイン';});
 }
 
-renderCalendar();renderMembers();renderTicketStats();renderReports();renderMemories();renderTodayAgenda();$('globalTags').value=data.settings.tags||'#乃木坂46 #ミーグリレポ';$('design').value=data.settings.design||'purple';$('userDisplayName').value=data.settings.displayName||'';$('appBgColor').value=data.settings.appBgColor||'#faf8fd';document.documentElement.style.setProperty('--bg',data.settings.appBgColor||'#faf8fd');const cc=data.settings.chatColors||{};$('meBubbleColor').value=cc.meBg||'#a8e6b0';$('meTextColor').value=cc.meText||'#263746';$('memberBubbleColor').value=cc.memberBg||'#ffffff';$('memberTextColor').value=cc.memberText||'#263746';updateChatColorPreview();
+renderCalendar();renderMembers();renderTicketStats();renderReports();renderMemories();renderTodayAgenda();$('globalTags').value=data.settings.tags||'#乃木坂46 #ミーグリレポ';$('reportBgColor').value=data.settings.reportBgColor||'#f0e8fa';$('reportBgColorHex').textContent=($('reportBgColor').value||'#f0e8fa').toUpperCase();$('userDisplayName').value=data.settings.displayName||'';$('appBgColor').value=data.settings.appBgColor||'#faf8fd';document.documentElement.style.setProperty('--bg',data.settings.appBgColor||'#faf8fd');const cc=data.settings.chatColors||{};$('meBubbleColor').value=cc.meBg||'#a8e6b0';$('meTextColor').value=cc.meText||'#263746';$('memberBubbleColor').value=cc.memberBg||'#ffffff';$('memberTextColor').value=cc.memberText||'#263746';updateChatColorPreview();
 </script>
 </body></html>
