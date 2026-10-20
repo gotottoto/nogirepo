@@ -602,7 +602,7 @@ window.viewReport=id=>{
  const colors=r.chatColors||data.settings.chatColors||{};
  $('memoryDetailHeader').innerHTML=`<div class="memory-card-top">${r.avatarData?`<img class="memory-card-avatar" src="${r.avatarData}" alt="">`:`<div class="memory-card-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg></div>`}<div class="memory-card-title"><strong>${escapeHtml(m?.name||'メンバー')}</strong><span>${escapeHtml(title)}</span><small>${escapeHtml(r.date)} · ${escapeHtml(r.part)}部 · ${r.tickets||1}枚</small></div></div>${r.hair||r.outfit?`<div class="member-memo-box">${r.hair?`<p><b>髪型：</b>${escapeHtml(r.hair)}</p>`:''}${r.outfit?`<p><b>服装：</b>${escapeHtml(r.outfit)}</p>`:''}</div>`:''}`;
  $('memoryDetailChat').innerHTML=(r.lines||[]).length?(r.lines||[]).map(l=>{
-  if(l.type==='note')return `<div class="scene-note"><span class="scene-note-label">場面メモ</span>${escapeHtml(l.text)}</div>`;
+  if(l.type==='note')return `<div class="scene-note">${escapeHtml(l.text)}</div>`;
   const me=l.who==='me',bg=me?(colors.meBg||'#a8e6b0'):(colors.memberBg||'#ffffff'),fg=me?(colors.meText||'#263746'):(colors.memberText||'#263746');
   return `<div class="bubble ${me?'me':'member'}" style="background:${bg};color:${fg}"><span class="speaker">${me?'自分':escapeHtml(m?.nickname||m?.name||'推し')}</span><p style="font-size:${Number(l.fontSize)||18}px;white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(l.text)}</p></div>`;
  }).join(''):'<div class="empty">会話メモはありません。</div>';
@@ -613,7 +613,7 @@ function renderChat(){
  let mid=$('reportMember').value,label=memberName(mid),cs=activeReportChatColors||data.settings.chatColors||{};
  $('chatArea').innerHTML=chatDraft.length?chatDraft.map((l,i)=>{
   if(l.type==='note'){
-   return `<div class="scene-note"><span class="scene-note-label">場面メモ</span>${escapeHtml(l.text)}${currentReportReadOnly?'':`<div class="note-tools"><button class="secondary" onclick="editLine(${i})">編集</button><button class="secondary" onclick="deleteLine(${i})">削除</button></div>`}</div>`;
+   return `<div class="scene-note">${escapeHtml(l.text)}${currentReportReadOnly?'':`<div class="note-tools"><button class="secondary" onclick="editLine(${i})">編集</button><button class="secondary" onclick="deleteLine(${i})">削除</button></div>`}</div>`;
   }
   let me=l.who==='me',bg=me?(cs.meBg||'#a8e6b0'):(cs.memberBg||'#ffffff'),fg=me?(cs.meText||'#263746'):(cs.memberText||'#263746');
   return `<div class="bubble ${me?'me':'member'}" style="background:${bg};color:${fg}"><span class="speaker">${me?'自分':escapeHtml(label)}</span><p style="font-size:${Number(l.fontSize)||18}px;white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(l.text)}</p>${currentReportReadOnly?'':`<div class="bubbletools"><button class="secondary" onclick="editLine(${i})">編集</button><button class="secondary" onclick="insertSceneNoteAfter(${i})">ここにメモ</button><button class="secondary" onclick="deleteLine(${i})">削除</button></div>`}</div>`;
