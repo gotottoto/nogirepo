@@ -338,8 +338,7 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #d6e7ed;bord
 </section>
 <section id="reports" class="view hidden">
 <div class="panel">
-<div class="row between"><div><h2>ミーグリレポート</h2><p class="muted">参加日程から会話を残す。左が推し、右が自分。</p></div><button id="newReportBtn">＋ レポート作成</button></div>
-<div id="reportList"></div>
+<div class="row between"><div><h2>ミーグリレポート</h2><p class="muted">新しいレポートを作成・編集する画面です。保存済みのレポートは「思い出」から確認できます。</p></div><button id="newReportBtn">＋ レポート作成</button></div>
 </div>
 <div id="reportEditor" class="panel hidden">
 <div class="row between"><h2 id="reportTitle">レポート編集</h2><button class="secondary" id="closeReportBtn">閉じる</button></div>
@@ -655,7 +654,7 @@ $('reportDate').onchange=updatePostText;$('reportPart').onchange=updatePostText;
 function saveReport(){let r={id:currentReportId||uid(),date:$('reportDate').value,part:$('reportPart').value,memberId:$('reportMember').value,tickets:Math.max(1,parseInt($('reportTickets').value,10)||1),hair:$('reportHair').value.trim(),outfit:$('reportOutfit').value.trim(),avatarData:pendingReportAvatar,chatColors:JSON.parse(JSON.stringify(activeReportChatColors||data.settings.chatColors||{meBg:'#a8e6b0',meText:'#263746',memberBg:'#ffffff',memberText:'#263746'})),lines:chatDraft,eventId:data.reports.find(x=>x.id===currentReportId)?.eventId||null};let ix=data.reports.findIndex(x=>x.id===r.id);if(ix>=0)data.reports[ix]=r;else data.reports.unshift(r);currentReportId=r.id;persist();$('reportTitle').textContent='レポートを編集';renderReports();renderMemories();return r}
 $('saveReportBtn').onclick=()=>{saveReport();alert('レポートを保存しました（このブラウザ内）')};
 $('closeReportBtn').onclick=()=>{$('reportEditor').classList.add('hidden');currentReportReadOnly=false;renderReports()};
-function renderReports(){let rs=data.reports;$('reportList').innerHTML=rs.length?rs.map(r=>{let m=memberById(r.memberId);return `<div class="part" style="margin-top:10px"><div class="parthead"><div><h3>${escapeHtml(m?.name||'メンバー')} · ${escapeHtml(r.date)} · ${r.part}部</h3><div class="muted">${r.lines.length}件の発言</div></div><div class="row"><button class="secondary" onclick="editReport('${r.id}')">開く</button><button class="danger" onclick="deleteReport('${r.id}')">削除</button></div></div></div>`}).join(''):'<div class="empty">まだレポートはありません。ミーグリの日程から「レポを書く」を押すか、新規作成してください。</div>'}
+function renderReports(){$('reportList').innerHTML='';}
 window.editReport=id=>openReport(data.reports.find(x=>x.id===id));
 window.deleteReport=id=>{if(confirm('レポートを削除しますか？')){data.reports=data.reports.filter(x=>x.id!==id);persist();renderReports();renderMemories()}};
 function renderMemories(){
