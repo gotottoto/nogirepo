@@ -370,10 +370,15 @@ input,select,textarea{width:100%;padding:10px 11px;border:1px solid #d6e7ed;bord
 </div>
 </section>
 <section id="memories" class="view hidden">
-<div class="panel">
+<div id="memoriesListPanel" class="panel">
 <div class="row between"><div><h2>思い出</h2><p class="muted">保存したレポートと、メンバーごとの参加枚数</p></div></div>
 <div id="memoryStats" class="memory-stats"></div>
 <div id="memoryCards" class="memory-cards"></div>
+</div>
+<div id="memoryDetail" class="panel hidden">
+ <div class="row between"><button class="secondary" id="memoryBackBtn">← 思い出に戻る</button><span class="memory-card-badge">閲覧専用</span></div>
+ <div id="memoryDetailHeader" style="margin-top:16px"></div>
+ <div id="memoryDetailChat" class="chat" style="margin-top:16px"></div>
 </div>
 </section>
 <section id="settings" class="view hidden">
@@ -591,7 +596,19 @@ function applyReportReadOnlyMode(){
  const postWrap=$('postText')?.parentElement;if(postWrap)postWrap.classList.toggle('hidden',currentReportReadOnly);
  const note=editor.querySelector('.muted:last-child');if(note)note.classList.toggle('hidden',currentReportReadOnly);
 }
-window.viewReport=id=>{const r=data.reports.find(x=>x.id===id);if(!r)return;openReport(r,true);activate('reports')};
+window.viewReport=id=>{
+ const r=data.reports.find(x=>x.id===id);if(!r)return;
+ const m=memberById(r.memberId),ev=data.events.find(e=>e.id===r.eventId)||data.events.find(e=>e.date===r.date&&e.type==='meet'),title=ev?.name||'ミーグリ';
+ const colors=r.chatColors||data.settings.chatColors||{};
+ $('memoryDetailHeader').innerHTML=`<div class="memory-card-top">${r.avatarData?`<img class="memory-card-avatar" src="${r.avatarData}" alt="">`:`<div class="memory-card-avatar-placeholder"><svg viewBox="0 0 24 24"><circle cx="12" cy="7.5" r="3.5"/><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2"/></svg></div>`}<div class="memory-card-title"><strong>${escapeHtml(m?.name||'メンバー')}</strong><span>${escapeHtml(title)}</span><small>${escapeHtml(r.date)} · ${escapeHtml(r.part)}部 · ${r.tickets||1}枚</small></div></div>${r.hair||r.outfit?`<div class="member-memo-box">${r.hair?`<p><b>髪型：</b>${escapeHtml(r.hair)}</p>`:''}${r.outfit?`<p><b>服装：</b>${escapeHtml(r.outfit)}</p>`:''}</div>`:''}`;
+ $('memoryDetailChat').innerHTML=(r.lines||[]).length?(r.lines||[]).map(l=>{
+  if(l.type==='note')return `<div class="scene-note"><span class="scene-note-label">場面メモ</span>${escapeHtml(l.text)}</div>`;
+  const me=l.who==='me',bg=me?(colors.meBg||'#a8e6b0'):(colors.memberBg||'#ffffff'),fg=me?(colors.meText||'#263746'):(colors.memberText||'#263746');
+  return `<div class="bubble ${me?'me':'member'}" style="background:${bg};color:${fg}"><span class="speaker">${me?'自分':escapeHtml(m?.nickname||m?.name||'推し')}</span><p style="font-size:${Number(l.fontSize)||18}px;white-space:pre-wrap;overflow-wrap:anywhere">${escapeHtml(l.text)}</p></div>`;
+ }).join(''):'<div class="empty">会話メモはありません。</div>';
+ $('memoriesListPanel').classList.add('hidden');$('memoryDetail').classList.remove('hidden');$('memoryDetail').scrollIntoView({behavior:'smooth',block:'start'});
+};
+$('memoryBackBtn').onclick=()=>{$('memoryDetail').classList.add('hidden');$('memoriesListPanel').classList.remove('hidden');renderMemories();$('memoriesListPanel').scrollIntoView({behavior:'smooth',block:'start'})};
 function renderChat(){
  let mid=$('reportMember').value,label=memberName(mid),cs=activeReportChatColors||data.settings.chatColors||{};
  $('chatArea').innerHTML=chatDraft.length?chatDraft.map((l,i)=>{
