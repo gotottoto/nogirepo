@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nogirepo-pwa-v50';
+const CACHE_NAME = 'nogirepo-pwa-v51';
 const CORE = [
   './','./index.html','./supabase-config.js',
   './manifest-rep.webmanifest','./manifest-heart.webmanifest',
