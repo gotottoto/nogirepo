@@ -649,7 +649,7 @@ function renderMemories(){
  $('memoryCards').innerHTML=stats+`<h3 class="memory-section-title">レポートの思い出</h3><div class="memory-report-grid">${cards}</div>`;
 }
 async function makeCanvas(){
- let m=memberById($('reportMember').value),date=$('reportDate').value,part=$('reportPart').value,tickets=Math.max(1,parseInt($('reportTickets').value,10)||1),design=$('design').value;
+ let m=memberById($('reportMember').value),date=$('reportDate').value,part=$('reportPart').value,tickets=Math.max(1,parseInt($('reportTickets').value,10)||1),design=$('design')?.value||data.settings.design||'purple';
  let ev=data.events.find(e=>e.date===date),rawEvent=ev?.name||ev?.format||'ミーグリ';
  let eventLabel=(rawEvent.match(/\d{2,3}(?:st|nd|rd|th)?シングル「[^」]+」/i)||[])[0]||rawEvent.replace(/発売記念|オンラインミーグリ|オンライン・個別トーク会|オンライン|個別トーク会/g,'').trim()||'ミーグリ';
  const c=document.createElement('canvas'),ctx=c.getContext('2d'),w=900,pad=42,maxBubbleW=650,textPadX=18,textPadY=12;
